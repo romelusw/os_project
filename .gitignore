@@ -1,0 +1,9 @@
+# Intellij files
+**.idea/
+**.iml
+
+# Mac files
+.DS_Store
+
+# Local configuration
+local.properties
