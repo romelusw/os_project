@@ -7,7 +7,7 @@ The following describes the structure of Cotton Candy Monitor Project:
 Engine that will provide data for the Application's Model. The MonitorUtil will provide components such as CPU, RAM, and Disk. MU will be a singleton that will require init to be called with the specified data components it would like to access. Once initialized and the polling has been defined for each component, MU will provide data to the Application's Model depending on the polling time.
 
 	-IWorker:
-	The compnents will follow this interface and override the function "getData," which will call private functions that will access the Android API to fetch the appropriate data. The "getData" function will return a "MUDataObject."
+	The components will follow this interface and override the function "getData," which will call private functions that will access the Android API to fetch the appropriate data. The "getData" function will return a "MUDataObject."
 	
 	-MUDataObject:
 	This will provide data for a single metric, such as I/O per second. Other properties of MUDataObject will be value, attribute, and timestamp.
@@ -20,3 +20,9 @@ The view(s) will display the information that the Model provides to the user dep
 
 -Controller:
 The Application will have a tab system, which the user can use to control the current view. When the user taps on a new tab, the model should tell the new view to display new information.
+
+## User flow
+> Whenever a user clicks on a process from the main process list pane
+> 1. We check if the process exists
+>   If not we alert the user with a popup indicating that the process has been since terminated
+> 2. Display the specific metrics relevant to the process selected

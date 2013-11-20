@@ -1,17 +1,22 @@
+/** Configuration driving the build */
 buildscript {
     repositories {
         mavenCentral()
     }
     dependencies {
+        /** Android Plugin for Gradle */
         classpath 'com.android.tools.build:gradle:0.6.+'
     }
 }
+
 apply plugin: 'android'
 
+/** Remote artifacts */
 repositories {
     mavenCentral()
 }
 
+/** Configuration for the android build */
 android {
     compileSdkVersion 19
     buildToolsVersion "19.0.0"
@@ -27,6 +32,7 @@ android {
     }
 }
 
+/** External Dependencies */
 dependencies {
 	compile 'com.android.support:appcompat-v7:+'
 }
