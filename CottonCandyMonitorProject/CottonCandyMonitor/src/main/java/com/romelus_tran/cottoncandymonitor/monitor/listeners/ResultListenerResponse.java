@@ -1,7 +1,9 @@
-package com.romelus_tran.cottoncandymonitor.monitor;
+package com.romelus_tran.cottoncandymonitor.monitor.listeners;
 
 /**
- * Enumeration of the various responses for a {@code com.romelus_tran.cottoncandymonitor.monitor.IResultListener}.
+ * Enumeration of the various responses for a {@code com.romelus_tran.cottoncandymonitor.monitor.listeners.IResultListener}.
+ *
+ * @author Woody Romelus
  */
 public enum ResultListenerResponse {
     SUCCESS(0, "Successfully processed the list of metrics."),

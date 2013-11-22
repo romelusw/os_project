@@ -1,11 +1,15 @@
-package com.romelus_tran.cottoncandymonitor.monitor;
+package com.romelus_tran.cottoncandymonitor.monitor.collectors;
+
+import com.romelus_tran.cottoncandymonitor.monitor.MetricUnit;
 
 import java.util.List;
 
 /**
  * An object capable of bundling data sets for a particular context.
+ *
+ * @author Woody Romelus
  */
-public interface IDataBundler {
+public interface IMetricCollector {
     /**
      * Retrieves a list of pertinent {@code MetricUnit} for some context.
      * @return the list of data metrics

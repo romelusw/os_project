@@ -1,3 +1,6 @@
+group = 'com.romelus_tran.cottoncandymonitor'
+version = '1.0.0'
+
 /** Configuration driving the build */
 buildscript {
     repositories {
@@ -19,7 +22,7 @@ repositories {
 /** Configuration for the android build */
 android {
     compileSdkVersion 19
-    buildToolsVersion "19.0.0"
+    buildToolsVersion '19.0.0'
 
     defaultConfig {
         minSdkVersion 7
@@ -34,5 +37,14 @@ android {
 
 /** External Dependencies */
 dependencies {
-	compile 'com.android.support:appcompat-v7:+'
+    // Android support libraries for various android platforms
+    compile 'com.android.support:appcompat-v7:+'
+
+    // Logging facade libraries
+    compile 'de.mindpipe.android:android-logging-log4j:1.0.3'
+    compile 'org.slf4j:slf4j-api:1.7.+'
+    compile 'org.apache.logging.log4j:log4j:2.0+'
+
+    // jUnit testing framework
+    instrumentTestCompile 'junit:junit:4.8.1@jar'
 }

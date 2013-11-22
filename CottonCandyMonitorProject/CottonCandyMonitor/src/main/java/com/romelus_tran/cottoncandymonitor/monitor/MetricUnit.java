@@ -11,6 +11,8 @@ import java.util.Date;
  * <code>
  *     MetricUnit mu = new MetricUnit(new Date(), 1, "TB");
  * </code>
+ *
+ * @author Woody Romelus
  */
 public class MetricUnit {
 

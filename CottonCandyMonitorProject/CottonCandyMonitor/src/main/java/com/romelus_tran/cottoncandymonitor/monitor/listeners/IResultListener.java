@@ -1,9 +1,13 @@
-package com.romelus_tran.cottoncandymonitor.monitor;
+package com.romelus_tran.cottoncandymonitor.monitor.listeners;
+
+import com.romelus_tran.cottoncandymonitor.monitor.MetricUnit;
 
 import java.util.List;
 
 /**
  * An object capable of receiving a list of metrics.
+ *
+ * @author Woody Romelus
  */
 public interface IResultListener {
     /**
