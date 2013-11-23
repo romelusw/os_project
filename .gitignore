@@ -9,4 +9,8 @@
 CottonCandyMonitorProject/local.properties
 
 # Gradle
+<<<<<<< HEAD
 *.gradle
+=======
+CottonCandyMonitorProject/.gradle
+>>>>>>> 96945cfb357e5f3562a465b0e9837f5ee4cdefa2
