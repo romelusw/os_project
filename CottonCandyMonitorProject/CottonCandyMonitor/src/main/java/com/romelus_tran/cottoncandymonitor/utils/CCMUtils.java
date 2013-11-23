@@ -13,10 +13,11 @@ public class CCMUtils {
 
     /**
      * Creates a logger facade.
+     *
      * @param clazz the object for which to name the logger
      * @return the logger
      */
-    public static Logger getLogger(Class<?> clazz) {
+    public static Logger getLogger(final Class<?> clazz) {
         return LoggerFactory.getLogger(APP_NAME + clazz.getSimpleName());
     }
 }

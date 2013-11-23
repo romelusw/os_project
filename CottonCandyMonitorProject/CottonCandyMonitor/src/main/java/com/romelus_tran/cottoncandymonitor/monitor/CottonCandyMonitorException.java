@@ -9,6 +9,7 @@ public class CottonCandyMonitorException extends Exception {
 
     /**
      * Default Constructor.
+     *
      * @param message the message
      */
     public CottonCandyMonitorException(final String message) {

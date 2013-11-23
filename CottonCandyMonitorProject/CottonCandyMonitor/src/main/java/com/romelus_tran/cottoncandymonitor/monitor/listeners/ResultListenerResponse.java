@@ -1,7 +1,8 @@
 package com.romelus_tran.cottoncandymonitor.monitor.listeners;
 
 /**
- * Enumeration of the various responses for a {@code com.romelus_tran.cottoncandymonitor.monitor.listeners.IResultListener}.
+ * Enumeration of the various responses for a
+ * {@code com.romelus_tran.cottoncandymonitor.monitor.listeners.IResultListener}.
  *
  * @author Woody Romelus
  */
@@ -14,16 +15,18 @@ public enum ResultListenerResponse {
 
     /**
      * Default Constructor.
+     *
      * @param respCode a numeric value indicating the status of the response
-     * @param respMsg a detailed message about the status of the response
+     * @param respMsg  a detailed message about the status of the response
      */
-    ResultListenerResponse(final int respCode, final String respMsg){
+    ResultListenerResponse(final int respCode, final String respMsg) {
         response = respCode;
         message = respMsg;
     }
 
     /**
-     * Getter for the response code numeric value
+     * Getter for the response code.
+     *
      * @return the response code
      */
     public int getResponseCode() {
@@ -32,6 +35,7 @@ public enum ResultListenerResponse {
 
     /**
      * Getter for message.
+     *
      * @return the response message
      */
     public String getMessage() {

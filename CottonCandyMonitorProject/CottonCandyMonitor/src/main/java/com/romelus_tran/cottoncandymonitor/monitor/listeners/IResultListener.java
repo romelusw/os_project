@@ -11,7 +11,9 @@ import java.util.List;
  */
 public interface IResultListener {
     /**
-     * Handles the data event from {@code com.romelus_tran.cottoncandymonitor.monitor.CottonCandyMonitor}
+     * Handles the data event from
+     * {@code com.romelus_tran.cottoncandymonitor.monitor.CottonCandyMonitor}
+     *
      * @param metrics the data that was collected
      * @return a response indicating if the data was handled
      */
