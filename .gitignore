@@ -7,3 +7,6 @@
 
 # Local configuration
 CottonCandyMonitorProject/local.properties
+
+# Gradle
+.gradle

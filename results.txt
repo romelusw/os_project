@@ -1,0 +1,1 @@
+/Applications/Android Studio.app/sdk/samples/android-19/legacy/USB/AdbTest/src/com/android/adb
