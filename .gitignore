@@ -9,4 +9,4 @@
 CottonCandyMonitorProject/local.properties
 
 # Gradle
-CottonCandyMonitorProject/.gradle
+*.gradle

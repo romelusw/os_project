@@ -46,6 +46,9 @@ dependencies {
     compile 'org.apache.logging.log4j:log4j:2.0+'
     compile files('libs/achartengine-1.1.0.jar')
 
+    // Apache libraries
+    compile 'commons-lang:commons-lang:+'
+
     // jUnit testing framework
     instrumentTestCompile 'junit:junit:4.8.1@jar'
 }
