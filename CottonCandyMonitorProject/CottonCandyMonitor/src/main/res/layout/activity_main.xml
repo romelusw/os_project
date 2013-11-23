@@ -1,7 +1,27 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    tools:ignore="MergeRootFrame" />
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/line_graph"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Line Graph"
+        android:onClick="lineGraphHandler"/>
+
+    <TextView
+        android:id="@+id/num_processes"
+        android:text="@string/num_processes"
+        android:layout_width="match_parent"
+        android:layout_height="18dp"
+        />
+
+    <ListView
+        android:id="@+id/list_processes"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:dividerHeight="0.1dp"
+        android:divider="#000000">
+    </ListView>
+</LinearLayout>

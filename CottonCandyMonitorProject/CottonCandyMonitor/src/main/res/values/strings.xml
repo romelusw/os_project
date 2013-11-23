@@ -4,5 +4,7 @@
     <string name="app_name">Cotton Candy Monitor</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="refresh_list">Refresh</string>
+    <string name="num_processes">Total Running Processes: </string>
 
 </resources>
