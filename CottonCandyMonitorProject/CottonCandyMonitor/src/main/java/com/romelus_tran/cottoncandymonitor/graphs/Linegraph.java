@@ -20,7 +20,7 @@ public class LineGraph {
     /**
      * Generates the intent for the line graph to pass into the graph activity.
      * @param context refers to the current activity
-     * @return the entent
+     * @return the intent
      */
     public Intent getIntent(Context context) {
 

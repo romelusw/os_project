@@ -27,12 +27,8 @@ public class MainActivity extends ActionBarActivity {
     ArrayList<String> processesList;
     TextView numProcesses;
 
-    /**
-     * Construct the MainActivity. This is where we get the
-     * @param savedInstanceState
-     */
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // TODO: register metrics here:
@@ -43,7 +39,7 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         // store the TextView that displays total processes running on the device
-        numProcesses = (TextView)findViewById(R.id.num_processes);
+        numProcesses = (TextView) findViewById(R.id.num_processes);
 
         // initialize processesList
         processesList = new ArrayList<String>();
@@ -53,7 +49,7 @@ public class MainActivity extends ActionBarActivity {
         arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, processesList);
 
         // Get the processesListView and set the arrayAdapter
-        ListView processesListView = (ListView)findViewById(R.id.list_processes);
+        ListView processesListView = (ListView) findViewById(R.id.list_processes);
         processesListView.setAdapter(arrayAdapter);
 
         // Register onClick event for every item in the list.
@@ -69,29 +65,21 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
-    /**
-     * Whenever we return to MainActivity, onResume() will be called. Call refreshList()..
-     */
     @Override
     protected void onResume() {
         super.onResume();
         refreshList();
     }
 
-    /**
-     * Create the main menu.
-     * @param menu
-     * @return
-     */
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         // Inflate the menu. This adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
@@ -115,18 +103,19 @@ public class MainActivity extends ActionBarActivity {
     private void refreshList() {
         //TODO: Replace this with an actual fetch to the real process list. populate accordingly
         processesList.add(getRandomProcess());
-        numProcesses.setText("Total Running Processes: " + processesList.size());
+
+        numProcesses.setText(getResources().getString(R.string.num_processes) + processesList.size());
         arrayAdapter.notifyDataSetChanged();
     }
 
     /**
      * This starts a new activity displaying a demo line graph.
      * TODO: Update the line graph to show real data and consider displaying the graph in MainActivity
-     * @param view
+     * @param view The button that triggers this event.
      */
-    public void lineGraphHandler(View view) {
+    public void lineGraphHandler(final View view) {
         LineGraph line = new LineGraph();
-        Intent lineIntent = line.getIntent(this);
+        Intent lineIntent = line.getIntent(getApplicationContext());
         startActivity(lineIntent);
     }
 
@@ -136,6 +125,6 @@ public class MainActivity extends ActionBarActivity {
      */
     private String getRandomProcess() {
         String[] s = new String[]{"Jet Pack Joyride", "Chrome", "Facebook", "Fruit Ninja", "Internet"};
-        return s[(int)Math.round(Math.random()* s.length)];
+        return s[(int) Math.floor(Math.random()* s.length)];
     }
 }
