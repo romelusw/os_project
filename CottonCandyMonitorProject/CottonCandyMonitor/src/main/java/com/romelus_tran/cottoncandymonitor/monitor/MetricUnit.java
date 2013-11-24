@@ -27,7 +27,7 @@ public class MetricUnit {
      * Default Constructor
      */
     public MetricUnit() {
-        this(new Date(System.currentTimeMillis()), "", Long.valueOf(0), "");
+        this(new Date(System.currentTimeMillis()), "", (long) 0, "");
     }
 
     /**

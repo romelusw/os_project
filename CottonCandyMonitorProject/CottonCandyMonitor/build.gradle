@@ -17,6 +17,7 @@ apply plugin: 'android'
 /** Remote artifacts */
 repositories {
     mavenCentral()
+    mavenRepo urls: 'https://repository-achartengine.forge.cloudbees.com/snapshot';
 }
 
 /** Configuration for the android build */
@@ -44,10 +45,12 @@ dependencies {
     compile 'de.mindpipe.android:android-logging-log4j:1.0.3'
     compile 'org.slf4j:slf4j-api:1.7.+'
     compile 'org.apache.logging.log4j:log4j:2.0+'
-    compile files('libs/achartengine-1.1.0.jar')
 
     // Apache libraries
     compile 'commons-lang:commons-lang:+'
+
+    // AChartEngine library
+    compile 'org.achartengine:achartengine:1.2.0'
 
     // jUnit testing framework
     instrumentTestCompile 'junit:junit:4.8.1@jar'

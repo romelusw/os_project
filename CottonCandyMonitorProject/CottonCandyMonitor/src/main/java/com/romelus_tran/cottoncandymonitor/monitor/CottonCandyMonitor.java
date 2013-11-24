@@ -32,7 +32,7 @@ public class CottonCandyMonitor {
     /**
      * Default Constructor.
      */
-    protected CottonCandyMonitor() {
+    private CottonCandyMonitor() {
         // Instantiation not allowed
         logger.info("Starting Monitor with thread pool size of [{}]",
                 threadPoolSize);

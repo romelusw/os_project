@@ -13,8 +13,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.romelus_tran.cottoncandymonitor.graphs.LineGraph;
-import com.romelus_tran.cottoncandymonitor.monitor.CottonCandyMonitor;
-import com.romelus_tran.cottoncandymonitor.monitor.collectors.CPUCollector;
 
 import java.util.ArrayList;
 
