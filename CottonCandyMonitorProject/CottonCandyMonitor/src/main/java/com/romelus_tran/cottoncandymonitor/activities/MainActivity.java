@@ -1,4 +1,4 @@
-package com.romelus_tran.cottoncandymonitor;
+package com.romelus_tran.cottoncandymonitor.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,8 +10,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.romelus_tran.cottoncandymonitor.R;
 import com.romelus_tran.cottoncandymonitor.graphs.LineGraph;
 
 import java.util.ArrayList;
@@ -59,8 +59,13 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String selectedProcess = processesList.get(position);
-                Toast.makeText(getApplicationContext(), "Process Selected: " + selectedProcess,
-                        Toast.LENGTH_LONG).show();
+
+                Intent intent = new Intent(MainActivity.this, ProcessActivity.class);
+                intent.putExtra("processName", selectedProcess);
+                startActivity(intent);
+
+//                Toast.makeText(getApplicationContext(), "Process Selected: " + selectedProcess,
+//                        Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -102,7 +107,9 @@ public class MainActivity extends ActionBarActivity {
      */
     private void refreshList() {
         //TODO: Replace this with an actual fetch to the real process list. populate accordingly
-        processesList.add(getRandomProcess());
+        for (int i = 0; i < 100; ++i) {
+            processesList.add(getRandomProcess());
+        }
 
         numProcesses.setText(getResources().getString(R.string.num_processes) + processesList.size());
         arrayAdapter.notifyDataSetChanged();
@@ -125,6 +132,6 @@ public class MainActivity extends ActionBarActivity {
      */
     private String getRandomProcess() {
         String[] s = new String[]{"Jet Pack Joyride", "Chrome", "Facebook", "Fruit Ninja", "Internet"};
-        return s[(int) Math.floor(Math.random()* s.length)];
+        return s[(int) Math.floor(Math.random() * s.length)];
     }
 }

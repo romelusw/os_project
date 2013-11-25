@@ -5,7 +5,7 @@ import junit.framework.Assert;
 import org.junit.Test;
 
 /**
- * Test class for {@link com.romelus_tran.cottoncandymonitor.MainActivity}
+ * Test class for {@link com.romelus_tran.cottoncandymonitor.activities.MainActivity}
  */
 public class MainActivityTest {
 
