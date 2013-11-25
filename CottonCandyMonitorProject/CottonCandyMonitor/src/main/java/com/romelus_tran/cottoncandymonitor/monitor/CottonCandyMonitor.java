@@ -4,13 +4,21 @@ import android.content.Context;
 
 import com.romelus_tran.cottoncandymonitor.monitor.collectors.IMetricCollector;
 import com.romelus_tran.cottoncandymonitor.monitor.listeners.IResultListener;
+import com.romelus_tran.cottoncandymonitor.monitor.listeners.ResultListenerResponse;
 import com.romelus_tran.cottoncandymonitor.utils.CCMUtils;
 
 import org.apache.commons.lang.time.StopWatch;
 import org.slf4j.Logger;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -22,21 +30,20 @@ import java.util.concurrent.TimeUnit;
  */
 public class CottonCandyMonitor {
 
-    private static CottonCandyMonitor instance;
-    private final ScheduledExecutorService scheduler;
-    private final int schedluerShutdownPeriod = 12;
     private final Logger logger = CCMUtils.getLogger(CottonCandyMonitor.class);
+    private final int threadPoolSize = 1;
+    private final int shutdownWaitPeriod = 12;
+    private static CottonCandyMonitor instance;
+    private ScheduledExecutorService scheduler;
+    private ExecutorService executors;
+    private Set<String> registered;
     private Context context;
-    private int threadPoolSize = 1;
 
     /**
      * Default Constructor.
      */
     private CottonCandyMonitor() {
         // Instantiation not allowed
-        logger.info("Starting Monitor with thread pool size of [{}]",
-                threadPoolSize);
-        scheduler = Executors.newScheduledThreadPool(threadPoolSize);
     }
 
     /**
@@ -53,25 +60,53 @@ public class CottonCandyMonitor {
 
     /**
      * Verifies that the {@code IMetricCollector} qualifies to be registered
-     * into the monitor. If so adds the collector to the scheduling service.
+     * into the monitor. If so adds the collector to the registered list.
      *
      * @param collector the metric retriever
-     * @param listeners the objects that desire the results of the collection
      * @return flag indicating if registration was successful
      */
-    public boolean register(final IMetricCollector collector,
-                            final List<IResultListener> listeners) {
+    public boolean register(final IMetricCollector collector) {
         boolean retVal = false;
+        if (isValidCollector(collector)) {
+            if (executors == null) {
+                logger.info("Starting the single executor.");
+                executors = Executors.newSingleThreadExecutor();
+            }
+            if (registered.add(collector.getClass().getSimpleName())) {
+                retVal = true;
+            } else {
+                logger.warn("The collector [{}] is already registered!",
+                        collector.getClass().getSimpleName());
+            }
+        }
+        return retVal;
+    }
 
-        if (collector != null && isValidCollector(collector)) {
-            logger.debug("Scheduling [{}] to run periodically every [{}]"
-                    + " seconds", collector.getClass().getSimpleName(),
-                    collector.pollingInterval());
-            scheduler.schedule(new DataBundlerRunner(collector, listeners),
-                    collector.pollingInterval(), TimeUnit.SECONDS);
+    /**
+     * Verifies that the {@code IMetricCollector} qualifies to be registered
+     * into the monitor. If so adds the collector to the scheduling service.
+     *
+     * @param collector       the metric retriever
+     * @param listeners       the objects that desire the results of the collection
+     * @param pollingInterval the polling intervals (in seconds)
+     * @return flag indicating if registration was successful
+     */
+    public boolean registerPollingCollector(final IMetricCollector collector,
+                                            final List<IResultListener> listeners,
+                                            final int pollingInterval) {
+        boolean retVal = false;
+        if (isValidCollector(collector) && listeners != null) {
+            if (scheduler == null) {
+                logger.info("Starting scheduler with thread pool size of [{}]",
+                        threadPoolSize);
+                scheduler = Executors.newScheduledThreadPool(threadPoolSize);
+            }
+            logger.debug("Scheduling [{}] to run periodically every [{}] seconds",
+                    collector.getClass().getSimpleName(), pollingInterval);
+            scheduler.scheduleAtFixedRate(new DataBundlerRunner(collector, listeners),
+                    0, collector.pollingInterval(), TimeUnit.SECONDS);
             retVal = true;
         }
-
         return retVal;
     }
 
@@ -83,37 +118,122 @@ public class CottonCandyMonitor {
      * @return flag indicating if the collector successfully retrieved data
      */
     private boolean isValidCollector(final IMetricCollector col) {
-        final DataBundlerRunner dbr = new DataBundlerRunner(col, null);
-        final Thread t = new Thread(dbr);
+        boolean retVal = false;
+        if (col != null) {
+            final DataBundlerRunner dbr = new DataBundlerRunner(col, null);
+            final Thread t = new Thread(dbr);
 
-        try {
-            t.run();
-            t.join();
-        } catch (final InterruptedException e) {
-            logger.error("The thread was interrupted.", e.getMessage());
+            try {
+                t.run();
+                t.join(); // Wait for thread to complete
+            } catch (final InterruptedException e) {
+                logger.error("The thread was interrupted.", e.getMessage());
+            }
+            retVal = (dbr.data != null);
         }
+        return retVal;
+    }
 
-        return (dbr.data != null);
+    /**
+     * Getter for the context.
+     *
+     * @return the context
+     */
+    public Context getContext() {
+        return context;
+    }
+
+    /**
+     * Setter for the context.
+     *
+     * @param ctx the context to set
+     */
+    public void setContext(final Context ctx) {
+        // To prevent memory leaks we attain the context for the application
+        // which will only exist as long as the application's life.
+        // Afterward it will be be out of scope, which qualifies it for
+        // garbage collection.
+        context = ctx.getApplicationContext();
+    }
+
+    /**
+     * Invokes and retrieves data metrics for a registered collector.
+     *
+     * @param regCollector the collector class
+     * @param methodName   the method to invoke
+     * @param args         the arguments the method takes
+     * @param argTypes     the argument class types
+     * @return the data that was collected for the method invocation
+     * @throws ExecutionException          the task was aborted prior to retrieving
+     *                                     its results
+     * @throws InterruptedException        if the waiting thread was interrupted
+     * @throws CottonCandyMonitorException if the collector class was not
+     *                                     already registered prior to calling this method
+     */
+    public List<MetricUnit> getData(final Class<?> regCollector,
+                                    final String methodName,
+                                    final Object[] args,
+                                    final Class... argTypes)
+            throws ExecutionException, InterruptedException,
+            CottonCandyMonitorException {
+
+        if (registered.contains(regCollector.getSimpleName())) {
+            List<MetricUnit> retVal;
+            Future<List<MetricUnit>> f = null;
+            try {
+                final Class cls = Class.forName(regCollector.getName());
+                final Object obj = cls.newInstance();
+                final Method m = cls.getDeclaredMethod(methodName, argTypes);
+                f = executors.submit(
+                        new Callable<List<MetricUnit>>() {
+
+                            @Override
+                            public List<MetricUnit> call() throws Exception {
+                                List<MetricUnit> result = null;
+                                result = (List<MetricUnit>) m.invoke(obj, args);
+                                return result;
+                            }
+                        }
+                );
+            } catch (final ClassNotFoundException e) {
+                logger.error("Could not find class [{}] to create.",
+                        regCollector.getSimpleName(), e.getMessage());
+            } catch (final NoSuchMethodException e) {
+                logger.error("Could not invoke method [{}].", methodName,
+                        e.getMessage());
+            } catch (final InstantiationException e) {
+                logger.error("Could not instantiate [{}].", regCollector.getSimpleName());
+            } catch (final IllegalAccessException e) {
+                logger.error("We do not have access using reflection.", e.getMessage());
+            }
+            return f.get();
+        } else {
+            throw new CottonCandyMonitorException("Collector: ["
+                    + regCollector.getSimpleName()
+                    + "] does not exist, please register it.");
+        }
     }
 
     /**
      * Shuts down the scheduling service.
      *
-     * @return flag indicating if service was shut down
+     * @return flag indicating if services were shut down
      */
     public boolean shutdown() {
 
         try {
-            logger.info("Shutting down the scheduling service.");
+            logger.info("Shutting down the thread services.");
             scheduler.shutdown();
-            TimeUnit.SECONDS.sleep(schedluerShutdownPeriod);
+            executors.shutdown();
+            TimeUnit.SECONDS.sleep(shutdownWaitPeriod);
             scheduler.shutdownNow();
-            logger.info("Scheduler service has been terminated successfully.");
+            executors.shutdownNow();
+            logger.info("Thread services have been terminated successfully.");
         } catch (final InterruptedException e) {
-            logger.error("Failed shutting down scheduling service",
+            logger.error("Failed shutting down thread service",
                     e.getMessage());
         }
-        return scheduler.isShutdown();
+        return scheduler.isShutdown() && executors.isShutdown();
     }
 
     /**
@@ -145,7 +265,7 @@ public class CottonCandyMonitor {
                 sw.start();
                 data = collectorObj.collectData(getContext());
                 sw.split();
-                notifyListeners(data);
+                notifyListeners(data); // Wait until receiver handles data
                 sw.stop();
                 logger.info("Start time: [{}], Collection Time: [{}] Total"
                         + " time: [{}]", sw.getStartTime(),
@@ -167,34 +287,13 @@ public class CottonCandyMonitor {
                 throws CottonCandyMonitorException {
             if (listenersList != null) {
                 for (final IResultListener listener : listenersList) {
+                    final ResultListenerResponse r = listener.receive(dataObj);
                     logger.info("[{}] :: [{}]", listener.getClass().getSimpleName(),
-                            listener.receive(dataObj).getMessage());
+                            r.getMessage());
                 }
             } else {
                 throw new CottonCandyMonitorException("Listener list is null.");
             }
         }
-    }
-
-    /**
-     * Getter for the context.
-     *
-     * @return the context
-     */
-    public Context getContext() {
-        return context;
-    }
-
-    /**
-     * Setter for the context.
-     *
-     * @param ctx the context to set
-     */
-    public void setContext(final Context ctx) {
-        // To prevent memory leaks we attain the context for the application
-        // which will only exist as long as the application's life.
-        // Afterward it will be be out of scope, which qualifies it for
-        // garbage collection.
-        context = ctx.getApplicationContext();
     }
 }

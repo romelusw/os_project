@@ -12,20 +12,12 @@ import java.util.List;
  *
  * @author Woody Romelus
  */
-public class CPUCollector implements IMetricCollector {
-    private int pollingPeriod = 2;
+public class CPUCollector {
     private ActivityManager am;
 
-
-    @Override
     public List<MetricUnit> collectData(final Context context) {
         am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         am.getRunningAppProcesses();
         return null;
-    }
-
-    @Override
-    public int pollingInterval() {
-        return pollingPeriod;
     }
 }
