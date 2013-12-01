@@ -3,8 +3,7 @@ package com.romelus_tran.cottoncandymonitor.monitor;
 import java.util.Date;
 
 /**
- * An object that represents a numerical measurement providing its relationship
- * with its context.
+ * An object that represents unit of data which relates to a context.
  *
  * <p/>Since the context is generic you can represent an infinite amount of
  * things.<p/>
@@ -19,15 +18,15 @@ import java.util.Date;
 public class MetricUnit {
 
     private Date metricTimestamp;
-    private String metricName;
-    private Long metricValue;
+    private String metricId;
+    private Object metricValue;
     private String metricAttr;
 
     /**
      * Default Constructor
      */
     public MetricUnit() {
-        this(new Date(System.currentTimeMillis()), "", (long) 0, "");
+        this(new Date(System.currentTimeMillis()), "", null, "");
     }
 
     /**
@@ -35,13 +34,13 @@ public class MetricUnit {
      *
      * @param timestamp the time the measurement was taken
      * @param name      the metric identifier
-     * @param value     the value of the measurement
+     * @param value     the value
      * @param attribute an optional attribute associated to the measurement
      */
-    public MetricUnit(final Date timestamp, final String name, final Long value,
+    public MetricUnit(final Date timestamp, final String name, final Object value,
                       final String attribute) {
         metricTimestamp = timestamp;
-        metricName = name;
+        metricId = name;
         metricValue = value;
         metricAttr = attribute;
     }
@@ -56,12 +55,12 @@ public class MetricUnit {
     }
 
     /**
-     * Getter for the name.
+     * Getter for the id.
      *
-     * @return the name
+     * @return the id
      */
-    public String getMetricName() {
-        return metricName;
+    public String getMetricId() {
+        return metricId;
     }
 
     /**
@@ -69,7 +68,7 @@ public class MetricUnit {
      *
      * @return the metric value
      */
-    public Long getMetricValue() {
+    public Object getMetricValue() {
         return metricValue;
     }
 
@@ -80,5 +79,17 @@ public class MetricUnit {
      */
     public String getMetricAttr() {
         return metricAttr;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("MetricUnit [")
+                .append("time: " + getMetricTimestamp() + "\\s")
+                .append("id: " + getMetricId() + "\\s")
+                .append("val: " + getMetricValue() + "\\s")
+                .append("attr: " + getMetricAttr() + "\\s")
+                .append("]");
+        return sb.toString();
     }
 }

@@ -43,8 +43,7 @@ dependencies {
 
     // Logging facade libraries
     compile 'de.mindpipe.android:android-logging-log4j:1.0.3'
-    compile 'org.slf4j:slf4j-api:1.7.+'
-    compile 'org.apache.logging.log4j:log4j:2.0+'
+    compile 'log4j:log4j:1.2.17'
 
     // Apache libraries
     compile 'commons-lang:commons-lang:+'

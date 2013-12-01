@@ -8,10 +8,10 @@ import com.romelus_tran.cottoncandymonitor.monitor.listeners.ResultListenerRespo
 import com.romelus_tran.cottoncandymonitor.utils.CCMUtils;
 
 import org.apache.commons.lang.time.StopWatch;
-import org.slf4j.Logger;
+import org.apache.log4j.Logger;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -36,7 +36,7 @@ public class CottonCandyMonitor {
     private static CottonCandyMonitor instance;
     private ScheduledExecutorService scheduler;
     private ExecutorService executors;
-    private Set<String> registered;
+    private final Set<String> registered = new HashSet<>();
     private Context context;
 
     /**
@@ -75,8 +75,9 @@ public class CottonCandyMonitor {
             if (registered.add(collector.getClass().getSimpleName())) {
                 retVal = true;
             } else {
-                logger.warn("The collector [{}] is already registered!",
-                        collector.getClass().getSimpleName());
+                logger.warn("The collector ["
+                        + collector.getClass().getSimpleName()
+                        + "] is already registered!");
             }
         }
         return retVal;
@@ -97,14 +98,15 @@ public class CottonCandyMonitor {
         boolean retVal = false;
         if (isValidCollector(collector) && listeners != null) {
             if (scheduler == null) {
-                logger.info("Starting scheduler with thread pool size of [{}]",
-                        threadPoolSize);
+                logger.info("Starting scheduler with thread pool size of ["
+                        + threadPoolSize + "]");
                 scheduler = Executors.newScheduledThreadPool(threadPoolSize);
             }
-            logger.debug("Scheduling [{}] to run periodically every [{}] seconds",
-                    collector.getClass().getSimpleName(), pollingInterval);
+            logger.debug("Scheduling [" + collector.getClass().getSimpleName()
+                    + "] to run periodically every [" + pollingInterval + "]"
+                    + " seconds");
             scheduler.scheduleAtFixedRate(new DataBundlerRunner(collector, listeners),
-                    0, collector.pollingInterval(), TimeUnit.SECONDS);
+                    0, pollingInterval, TimeUnit.SECONDS);
             retVal = true;
         }
         return retVal;
@@ -127,9 +129,9 @@ public class CottonCandyMonitor {
                 t.run();
                 t.join(); // Wait for thread to complete
             } catch (final InterruptedException e) {
-                logger.error("The thread was interrupted.", e.getMessage());
+                logger.error("The thread was interrupted.", e);
             }
-            retVal = (dbr.data != null);
+            retVal = (!dbr.data.isEmpty());
         }
         return retVal;
     }
@@ -196,15 +198,15 @@ public class CottonCandyMonitor {
                         }
                 );
             } catch (final ClassNotFoundException e) {
-                logger.error("Could not find class [{}] to create.",
-                        regCollector.getSimpleName(), e.getMessage());
+                logger.error("Could not find class ["
+                        + regCollector.getSimpleName() + "] to create.", e);
             } catch (final NoSuchMethodException e) {
-                logger.error("Could not invoke method [{}].", methodName,
-                        e.getMessage());
+                logger.error("Could not invoke method [" + methodName + "].", e);
             } catch (final InstantiationException e) {
-                logger.error("Could not instantiate [{}].", regCollector.getSimpleName());
+                logger.error("Could not instantiate ["
+                        + regCollector.getSimpleName() + "].", e);
             } catch (final IllegalAccessException e) {
-                logger.error("We do not have access using reflection.", e.getMessage());
+                logger.error("We do not have access using reflection.", e);
             }
             return f.get();
         } else {
@@ -230,8 +232,7 @@ public class CottonCandyMonitor {
             executors.shutdownNow();
             logger.info("Thread services have been terminated successfully.");
         } catch (final InterruptedException e) {
-            logger.error("Failed shutting down thread service",
-                    e.getMessage());
+            logger.error("Failed shutting down thread service", e);
         }
         return scheduler.isShutdown() && executors.isShutdown();
     }
@@ -265,14 +266,17 @@ public class CottonCandyMonitor {
                 sw.start();
                 data = collectorObj.collectData(getContext());
                 sw.split();
-                notifyListeners(data); // Wait until receiver handles data
+                if(listenersList != null) {
+                    notifyListeners(data); // Wait until receiver handles data
+                }
                 sw.stop();
-                logger.info("Start time: [{}], Collection Time: [{}] Total"
-                        + " time: [{}]", sw.getStartTime(),
-                        sw.getStartTime() - sw.getSplitTime(), sw.getTime());
+                logger.info("Data Collection completed. Start time: ["
+                        + sw.getStartTime() + " ms],"
+                        + " Collection Time: ["
+                        + (sw.getSplitTime() - sw.getStartTime())
+                        + "ms] Total  time: [" + sw.getTime() + "ms]");
             } catch (final CottonCandyMonitorException e) {
-                logger.error("Could not send data to listener(s).",
-                        e.getMessage());
+                logger.error("Could not send data to listener(s).", e);
             }
         }
 
@@ -288,8 +292,8 @@ public class CottonCandyMonitor {
             if (listenersList != null) {
                 for (final IResultListener listener : listenersList) {
                     final ResultListenerResponse r = listener.receive(dataObj);
-                    logger.info("[{}] :: [{}]", listener.getClass().getSimpleName(),
-                            r.getMessage());
+                    logger.info("[" + listener.getClass().getSimpleName()
+                            + "] :: [" + r.getMessage() + "]");
                 }
             } else {
                 throw new CottonCandyMonitorException("Listener list is null.");

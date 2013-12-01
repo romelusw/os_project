@@ -19,11 +19,4 @@ public interface IMetricCollector {
      * @return the list of data metrics
      */
     List<MetricUnit> collectData(final Context context);
-
-    /**
-     * Retrieves the gap of time in between collection cycles.
-     *
-     * @return the polling intervals measured in seconds
-     */
-    int pollingInterval();
 }

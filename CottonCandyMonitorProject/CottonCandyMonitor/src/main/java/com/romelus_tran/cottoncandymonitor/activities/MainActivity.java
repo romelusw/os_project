@@ -1,7 +1,9 @@
 package com.romelus_tran.cottoncandymonitor.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,16 +15,32 @@ import android.widget.TextView;
 
 import com.romelus_tran.cottoncandymonitor.R;
 import com.romelus_tran.cottoncandymonitor.graphs.LineGraph;
+import com.romelus_tran.cottoncandymonitor.monitor.CottonCandyMonitor;
+import com.romelus_tran.cottoncandymonitor.monitor.CottonCandyMonitorException;
+import com.romelus_tran.cottoncandymonitor.monitor.MetricUnit;
+import com.romelus_tran.cottoncandymonitor.monitor.collectors.CPUCollector;
+import com.romelus_tran.cottoncandymonitor.utils.CCMUtils;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
+import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+import de.mindpipe.android.logging.log4j.LogConfigurator;
 
 /**
- * The primary activity that displays the graph button and the current processes running on the
- * device. This activity extends ActionBarActivity, allowing for a menu panel to be displayed
- * whenever the menu button is selected.
+ * The primary activity that displays the graph button and the current processes
+ * running on the device. This activity extends ActionBarActivity, allowing for
+ * a menu panel to be displayed whenever the menu button is selected.
+ *
+ * @author Woody Romelus, Brian Tran
  */
 public class MainActivity extends ActionBarActivity {
 
+    private final Logger logger = CCMUtils.getLogger(MainActivity.class);
     ArrayAdapter<String> arrayAdapter;
     ArrayList<String> processesList;
     TextView numProcesses;
@@ -30,6 +48,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        configureLogger();
 
         // TODO: register metrics here:
         // NOTE: CottonCandyMonitor has an error (need to import "StopWatch"), which is why this is
@@ -68,6 +87,7 @@ public class MainActivity extends ActionBarActivity {
 //                        Toast.LENGTH_LONG).show();
             }
         });
+
     }
 
     @Override
@@ -133,5 +153,21 @@ public class MainActivity extends ActionBarActivity {
     private String getRandomProcess() {
         String[] s = new String[]{"Jet Pack Joyride", "Chrome", "Facebook", "Fruit Ninja", "Internet"};
         return s[(int) Math.floor(Math.random() * s.length)];
+    }
+
+    /**
+     * Configures the logger system with default settings.
+     */
+    public void configureLogger() {
+        final LogConfigurator logConfigurator = new LogConfigurator();
+
+        logConfigurator.setFileName(Environment.getExternalStorageDirectory()
+                + File.separator + getResources().getString(R.string.app_name)
+                .toLowerCase().replace(" ", "_") + ".log");
+        logConfigurator.setRootLevel(Level.DEBUG);
+        // Set log level of a specific logger
+        logConfigurator.setLevel("org.apache.log4j.Logger", Level.ERROR);
+        logConfigurator.configure();
+        logger.info("Logger is configured.");
     }
 }
