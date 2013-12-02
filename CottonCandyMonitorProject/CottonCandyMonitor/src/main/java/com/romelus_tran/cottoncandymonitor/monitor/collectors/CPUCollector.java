@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * An object capable of retrieving cpu related metrics.
@@ -26,7 +28,7 @@ import java.util.List;
 public class CPUCollector implements IMetricCollector {
     private static final Logger logger = CCMUtils.getLogger(CPUCollector.class);
     private final Runtime ENV = Runtime.getRuntime();
-    private final String USAGE_CMD = "top -m 1 -n 1 -d .01 | grep User.*System";
+    private final String USAGE_CMD = "top -m 1 -n 1 -d .01";
     private final String SHELL_CMD = "/system/bin/sh";
 
     @Override
@@ -48,7 +50,12 @@ public class CPUCollector implements IMetricCollector {
                 new String[] {SHELL_CMD, "-c", USAGE_CMD});
 
         if (results.getLeft()) {
-            retVal = convertUsageToMetricUnit(results.getRight());
+            final Pattern p = Pattern.compile("(^.*(?=User))");
+            final Matcher m = p.matcher(results.getRight());
+
+            if (m.find()) {
+                retVal = convertUsageToMetricUnit(m.group(1));
+            }
         } else {
             logger.error("Failed to collect CPU Usage. " + results.getRight());
         }
@@ -66,9 +73,10 @@ public class CPUCollector implements IMetricCollector {
                 context.getSystemService(Context.ACTIVITY_SERVICE);
         final PackageManager pm = context.getPackageManager();
         final List<MetricUnit> retVal = new ArrayList<>();
+        List<ActivityManager.RunningAppProcessInfo> rApps = am.getRunningAppProcesses();
         ApplicationInfo ai;
 
-        for (final ActivityManager.RunningAppProcessInfo info : am.getRunningAppProcesses()) {
+        for (final ActivityManager.RunningAppProcessInfo info : rApps) {
             final String processName = info.processName;
             try {
                 ai = pm.getApplicationInfo(processName, 0);
