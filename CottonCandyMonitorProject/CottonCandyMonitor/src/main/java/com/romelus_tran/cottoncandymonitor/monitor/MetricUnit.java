@@ -33,14 +33,14 @@ public class MetricUnit {
      * Constructor.
      *
      * @param timestamp the time the measurement was taken
-     * @param name      the metric identifier
+     * @param id      the metric identifier
      * @param value     the value
      * @param attribute an optional attribute associated to the measurement
      */
-    public MetricUnit(final Date timestamp, final String name, final Object value,
+    public MetricUnit(final Date timestamp, final String id, final Object value,
                       final String attribute) {
         metricTimestamp = timestamp;
-        metricId = name;
+        metricId = id;
         metricValue = value;
         metricAttr = attribute;
     }

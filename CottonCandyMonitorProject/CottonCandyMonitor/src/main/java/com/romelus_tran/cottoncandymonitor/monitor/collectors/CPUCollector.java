@@ -13,8 +13,10 @@ import com.romelus_tran.cottoncandymonitor.utils.Pair;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -29,12 +31,40 @@ public class CPUCollector implements IMetricCollector {
     private static final Logger logger = CCMUtils.getLogger(CPUCollector.class);
     private final Runtime ENV = Runtime.getRuntime();
     private final String USAGE_CMD = "top -m 1 -n 1 -d .01";
+    private final String PROC_INFO = "cat /proc/{0}/status";
     private final String SHELL_CMD = "/system/bin/sh";
 
     @Override
     public List<MetricUnit> collectData(final Context context) {
         final List<MetricUnit> retVal = new ArrayList<>();
         retVal.addAll(getCPUUsage());
+        retVal.addAll(getRunningProcesses(context));
+        return retVal;
+    }
+
+    /**
+     * Retrieves the process status information provided by reading the linux
+     * /proc/{pid}/status file.
+     *
+     * @param pid the process id
+     * @return the status info
+     */
+    public List<MetricUnit> getProcessInfo(final String pid) {
+        List<MetricUnit> retVal = new ArrayList<>();
+        if (!pid.isEmpty()) {
+            final MessageFormat mf = new MessageFormat(PROC_INFO);
+            final String command = mf.format(new Object[] {pid});
+            Pair<Boolean, String> results = executeCommand(
+                    new String[] {SHELL_CMD, "-c", command});
+
+            if (results.getLeft()) {
+                retVal.add(new MetricUnit(new Date(System.currentTimeMillis()),
+                        CCMConstants.PROC_INFO, results.getRight(), pid));
+            } else {
+                logger.error("Failed to collect process info. "
+                        + results.getRight());
+            }
+        }
         return retVal;
     }
 
@@ -69,22 +99,26 @@ public class CPUCollector implements IMetricCollector {
      * @return the list of processes
      */
     public List<MetricUnit> getRunningProcesses(final Context context) {
-        final ActivityManager am = (ActivityManager)
-                context.getSystemService(Context.ACTIVITY_SERVICE);
-        final PackageManager pm = context.getPackageManager();
         final List<MetricUnit> retVal = new ArrayList<>();
-        List<ActivityManager.RunningAppProcessInfo> rApps = am.getRunningAppProcesses();
-        ApplicationInfo ai;
+        if (context != null) {
+            final ActivityManager am = (ActivityManager)
+                    context.getSystemService(Context.ACTIVITY_SERVICE);
+            final PackageManager pm = context.getPackageManager();
+            final List<ActivityManager.RunningAppProcessInfo> rApps =
+                    am.getRunningAppProcesses();
+            ApplicationInfo ai;
 
-        for (final ActivityManager.RunningAppProcessInfo info : rApps) {
-            final String processName = info.processName;
-            try {
-                ai = pm.getApplicationInfo(processName, 0);
-                retVal.add(new MetricUnit(new Date(System.currentTimeMillis()),
-                CCMConstants.PROCESSES_ID, pm.getApplicationIcon(processName),
-                        (String) pm.getApplicationLabel(ai)));
-            } catch (final PackageManager.NameNotFoundException e) {
-                logger.warn("Could not find package. ", e);
+            for (final ActivityManager.RunningAppProcessInfo info : rApps) {
+                final String processName = info.processName;
+                try {
+                    ai = pm.getApplicationInfo(processName, 0);
+                    retVal.add(new MetricUnit(new Date(System.currentTimeMillis()),
+                            CCMConstants.PROCESSES_ID,
+                            pm.getApplicationIcon(processName),
+                            (String) pm.getApplicationLabel(ai)));
+                } catch (final PackageManager.NameNotFoundException e) {
+                    logger.warn("Could not find package. ", e);
+                }
             }
         }
         return retVal;
