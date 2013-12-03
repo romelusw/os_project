@@ -10,23 +10,28 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.romelus_tran.cottoncandymonitor.R;
+import com.romelus_tran.cottoncandymonitor.adapters.ProcessesAdapter;
 import com.romelus_tran.cottoncandymonitor.graphs.LineGraph;
+import com.romelus_tran.cottoncandymonitor.graphs.Point;
 import com.romelus_tran.cottoncandymonitor.monitor.CottonCandyMonitor;
 import com.romelus_tran.cottoncandymonitor.monitor.CottonCandyMonitorException;
 import com.romelus_tran.cottoncandymonitor.monitor.MetricUnit;
 import com.romelus_tran.cottoncandymonitor.monitor.collectors.CPUCollector;
 import com.romelus_tran.cottoncandymonitor.utils.CCMUtils;
 
+import org.achartengine.GraphicalView;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 import de.mindpipe.android.logging.log4j.LogConfigurator;
@@ -41,53 +46,60 @@ import de.mindpipe.android.logging.log4j.LogConfigurator;
 public class MainActivity extends ActionBarActivity {
 
     private final Logger logger = CCMUtils.getLogger(MainActivity.class);
-    ArrayAdapter<String> arrayAdapter;
-    ArrayList<String> processesList;
+    ProcessesAdapter processesAdapter;
+    List<MetricUnit> processesList;
     TextView numProcesses;
+    LineGraph cpuUsageGraph;
+
+    GraphicalView cpuUsageView;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         configureLogger();
 
-        // TODO: register metrics here:
-        // NOTE: CottonCandyMonitor has an error (need to import "StopWatch"), which is why this is
-        // commented out.
-        // CottonCandyMonitor.getInstance.register(new CPUCollector, <listener>);
+        if (CottonCandyMonitor.getInstance().register(new CPUCollector())) {
+            logger.info("Successfully registered CPUCollector");
+        } else {
+            logger.error("Collector was not registered");
+        }
 
         setContentView(R.layout.activity_main);
+
+        cpuUsageGraph = new LineGraph();
+        cpuUsageView = cpuUsageGraph.getView(this);
+        ((LinearLayout) findViewById(R.id.chart)).addView(cpuUsageView);
 
         // store the TextView that displays total processes running on the device
         numProcesses = (TextView) findViewById(R.id.num_processes);
 
         // initialize processesList
-        processesList = new ArrayList<String>();
+        processesList = new ArrayList<>();
 
         // Create the adapter based on processesList. Now whenever processesList is updated,
         // the adapter will notify the ListView to update.
-        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, processesList);
+        processesAdapter = new ProcessesAdapter(this, R.layout.processes_list, processesList);
 
         // Get the processesListView and set the arrayAdapter
         ListView processesListView = (ListView) findViewById(R.id.list_processes);
-        processesListView.setAdapter(arrayAdapter);
+        processesListView.setAdapter(processesAdapter);
 
         // Register onClick event for every item in the list.
-        // NOTE: This is currently sending a "Toast" to the user at the moment.
-        // TODO: The listener should create an intent, which should be passed to the processorView
         processesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String selectedProcess = processesList.get(position);
+                MetricUnit selectedProcess = processesList.get(position);
 
                 Intent intent = new Intent(MainActivity.this, ProcessActivity.class);
-                intent.putExtra("processName", selectedProcess);
-                startActivity(intent);
+                intent.putExtra("processName", selectedProcess.getMetricAttr());
 
-//                Toast.makeText(getApplicationContext(), "Process Selected: " + selectedProcess,
-//                        Toast.LENGTH_LONG).show();
+                // TODO: pass selectedProcess.getMetricValue().id
+                intent.putExtra("processId", 0);
+
+                startActivity(intent);
+                overridePendingTransition(R.anim.abc_slide_in_bottom, 0);
             }
         });
-
     }
 
     @Override
@@ -113,7 +125,6 @@ public class MainActivity extends ActionBarActivity {
                 return true;
 
             case R.id.refresh_list:
-                // refresh the list
                 refreshList();
                 return true;
 
@@ -126,33 +137,39 @@ public class MainActivity extends ActionBarActivity {
      * Update the processes list here and notify the adapter that the list has changed.
      */
     private void refreshList() {
-        //TODO: Replace this with an actual fetch to the real process list. populate accordingly
-        for (int i = 0; i < 100; ++i) {
-            processesList.add(getRandomProcess());
+        processesList.clear();
+
+        try {
+            // Instead of re-setting processesList to getData, we just add all contents from getData
+            processesList.addAll(CottonCandyMonitor.getInstance().getData(CPUCollector.class,
+                    "getRunningProcesses", new Object[]{this.getApplicationContext()}, Context.class));
+            logger.info("refreshList(): Successfully received data");
+        } catch (ExecutionException | InterruptedException | CottonCandyMonitorException e) {
+            logger.error("refreshList():", e);
         }
 
+        // notify the adapter that we just updated the processes list
+        processesAdapter.notifyDataSetChanged();
+
+        // update the text showing how many processes are running
         numProcesses.setText(getResources().getString(R.string.num_processes) + processesList.size());
-        arrayAdapter.notifyDataSetChanged();
-    }
 
-    /**
-     * This starts a new activity displaying a demo line graph.
-     * TODO: Update the line graph to show real data and consider displaying the graph in MainActivity
-     * @param view The button that triggers this event.
-     */
-    public void lineGraphHandler(final View view) {
-        LineGraph line = new LineGraph();
-        Intent lineIntent = line.getIntent(getApplicationContext());
-        startActivity(lineIntent);
+        // NOTE: The following will be placed inside a listener class
+        // TODO: Setup a listener to do the following: get the data and call setGraph passing the appropriate data and then repaint
+        cpuUsageGraph.setGraph(getRandomData()); // getRandomData() is a fake call to populate a random array
+        cpuUsageView.repaint();
     }
+	
+	private ArrayList<Point> getRandomData() {
+        ArrayList<Point> retVal = new ArrayList<>();
 
-    /**
-     * Test function to populate processes list.
-     * TODO: Remove this function when we get real data.
-     */
-    private String getRandomProcess() {
-        String[] s = new String[]{"Jet Pack Joyride", "Chrome", "Facebook", "Fruit Ninja", "Internet"};
-        return s[(int) Math.floor(Math.random() * s.length)];
+        Random r = new Random();
+
+        for (int i = 0; i < 20; ++i) {
+            retVal.add(new Point(i, r.nextInt(100)));
+        }
+
+        return retVal;
     }
 
     /**

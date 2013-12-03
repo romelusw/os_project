@@ -5,4 +5,15 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <!--http://www.colorcombos.com/color-schemes/211/ColorCombo211.html-->
+    <color name="backgroundColor">#FFFFFF</color>
+    <color name="headerColor">#000000</color>
+    <color name="textColor">#000000</color>
+    <color name="mainDividerColor">#000000</color>
+    <color name="dividerColor">#000000</color>
+
+    <color name="lineColor1">#000000</color>
+    <color name="lineColor2">#999999</color>
+    <color name="lineColor3">#666666</color>
+    <color name="lineColor4">#333333</color>
 </resources>

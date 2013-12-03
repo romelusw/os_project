@@ -3,25 +3,37 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/line_graph"
+    <LinearLayout
+        android:id="@+id/chart"
+        android:orientation="horizontal"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Line Graph"
-        android:onClick="lineGraphHandler"/>
+        android:layout_height="100dp"/>
+
+    <!-- Separator -->
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="2dp"
+        android:background="@color/mainDividerColor"/>
 
     <TextView
         android:id="@+id/num_processes"
         android:text="@string/num_processes"
         android:layout_width="match_parent"
-        android:layout_height="18dp"
-        />
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/textColor"
+        android:background="@color/backgroundColor"/>
+
+    <!-- Separator -->
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="2dp"
+        android:background="@color/mainDividerColor"/>
 
     <ListView
         android:id="@+id/list_processes"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:dividerHeight="0.1dp"
-        android:divider="#000000">
-    </ListView>
+        android:dividerHeight="1dp"
+        android:divider="@color/dividerColor"/>
 </LinearLayout>
