@@ -4,6 +4,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 
 import com.romelus_tran.cottoncandymonitor.monitor.MetricUnit;
 import com.romelus_tran.cottoncandymonitor.utils.CCMConstants;
@@ -16,9 +17,10 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -93,7 +95,7 @@ public class CPUCollector implements IMetricCollector {
     }
 
     /**
-     * Returns a list of running processes, as well as their icon and label.
+     * Returns a list of running processes, as well as their icon, pid and label.
      *
      * @param context the application context
      * @return the list of processes
@@ -110,11 +112,12 @@ public class CPUCollector implements IMetricCollector {
 
             for (final ActivityManager.RunningAppProcessInfo info : rApps) {
                 final String processName = info.processName;
+                final Map<Drawable, String> data = new HashMap<>();
                 try {
                     ai = pm.getApplicationInfo(processName, 0);
+                    data.put(pm.getApplicationIcon(processName), String.valueOf(info.pid));
                     retVal.add(new MetricUnit(new Date(System.currentTimeMillis()),
-                            CCMConstants.PROCESSES_ID,
-                            pm.getApplicationIcon(processName),
+                            CCMConstants.PROCESSES_ID, data,
                             (String) pm.getApplicationLabel(ai)));
                 } catch (final PackageManager.NameNotFoundException e) {
                     logger.warn("Could not find package. ", e);
