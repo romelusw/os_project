@@ -18,9 +18,9 @@ import java.util.ArrayList;
 
 /**
  * Created by Brian on 11/21/13.
- * Create a LineGraph, in this case this will be the CPU display.
+ * Create a CPUUsageGraph, in this case this will be the CPU display.
  */
-public class LineGraph {
+public class CPUUsageGraph {
 
     TimeSeries series;
 

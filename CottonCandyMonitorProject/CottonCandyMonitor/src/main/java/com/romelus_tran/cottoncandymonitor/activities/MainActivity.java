@@ -2,6 +2,7 @@ package com.romelus_tran.cottoncandymonitor.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
@@ -9,20 +10,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.romelus_tran.cottoncandymonitor.R;
 import com.romelus_tran.cottoncandymonitor.adapters.ProcessesAdapter;
-import com.romelus_tran.cottoncandymonitor.graphs.LineGraph;
+import com.romelus_tran.cottoncandymonitor.graphs.CPUUsageGraph;
 import com.romelus_tran.cottoncandymonitor.graphs.Point;
 import com.romelus_tran.cottoncandymonitor.monitor.CottonCandyMonitor;
 import com.romelus_tran.cottoncandymonitor.monitor.CottonCandyMonitorException;
 import com.romelus_tran.cottoncandymonitor.monitor.MetricUnit;
 import com.romelus_tran.cottoncandymonitor.monitor.collectors.CPUCollector;
 import com.romelus_tran.cottoncandymonitor.utils.CCMUtils;
+import com.romelus_tran.cottoncandymonitor.utils.Pair;
 
 import org.achartengine.GraphicalView;
 import org.apache.log4j.Level;
@@ -49,7 +50,7 @@ public class MainActivity extends ActionBarActivity {
     ProcessesAdapter processesAdapter;
     List<MetricUnit> processesList;
     TextView numProcesses;
-    LineGraph cpuUsageGraph;
+    CPUUsageGraph cpuUsageGraph;
 
     GraphicalView cpuUsageView;
 
@@ -66,7 +67,7 @@ public class MainActivity extends ActionBarActivity {
 
         setContentView(R.layout.activity_main);
 
-        cpuUsageGraph = new LineGraph();
+        cpuUsageGraph = new CPUUsageGraph();
         cpuUsageView = cpuUsageGraph.getView(this);
         ((LinearLayout) findViewById(R.id.chart)).addView(cpuUsageView);
 
@@ -91,10 +92,8 @@ public class MainActivity extends ActionBarActivity {
                 MetricUnit selectedProcess = processesList.get(position);
 
                 Intent intent = new Intent(MainActivity.this, ProcessActivity.class);
-                intent.putExtra("processName", selectedProcess.getMetricAttr());
-
-                // TODO: pass selectedProcess.getMetricValue().id
-                intent.putExtra("processId", 0);
+                Pair<Drawable, String> pair = (Pair) selectedProcess.getMetricValue();
+                intent.putExtra("processId", pair.getRight());
 
                 startActivity(intent);
                 overridePendingTransition(R.anim.abc_slide_in_bottom, 0);

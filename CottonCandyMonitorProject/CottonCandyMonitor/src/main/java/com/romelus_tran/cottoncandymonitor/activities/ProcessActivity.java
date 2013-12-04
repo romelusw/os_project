@@ -35,29 +35,24 @@ public class ProcessActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_process);
 
-        Intent intent = getIntent();
-        String processName = intent.getStringExtra("processName");
-        int processId = intent.getIntExtra("processId", 0);
+        String processId = getIntent().getStringExtra("processId");
 
         TextView textView = (TextView) findViewById(R.id.data);
-        textView.setText(processName + " is running on your device!");
 
-        // TODO: Uncomment code below once we get real pIds
-//        List<MetricUnit> muList = new ArrayList<>();
-//
-//        try {
-//            // Instead of re-setting processesList to getData, we just add all contents from getData
-//            muList = CottonCandyMonitor.getInstance().getData(CPUCollector.class,
-//                    "getProcessInfo",new Object[]{processId},String.class);
-//
-//            logger.info("Successfully retrieved process information");
-//        } catch (ExecutionException | InterruptedException | CottonCandyMonitorException e) {
-//            logger.error(e);
-//        }
-//
-//        if (muList != null) {
-//            textView.setText((String) muList.get(0).getMetricValue());
-//        }
+        List<MetricUnit> muList = new ArrayList<>();
+
+        try {
+            muList = CottonCandyMonitor.getInstance().getData(CPUCollector.class,
+                    "getProcessInfo",new Object[]{processId},String.class);
+
+            logger.info("Successfully retrieved process information");
+        } catch (ExecutionException | InterruptedException | CottonCandyMonitorException e) {
+            logger.error(e);
+        }
+
+        if (muList != null) {
+            textView.setText((String) muList.get(0).getMetricValue());
+        }
     }
 
     @Override

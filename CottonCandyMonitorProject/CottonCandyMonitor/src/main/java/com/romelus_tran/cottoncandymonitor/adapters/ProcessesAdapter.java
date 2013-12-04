@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.romelus_tran.cottoncandymonitor.R;
 import com.romelus_tran.cottoncandymonitor.monitor.MetricUnit;
+import com.romelus_tran.cottoncandymonitor.utils.Pair;
 
 import java.util.List;
 
@@ -46,15 +47,16 @@ public class ProcessesAdapter extends ArrayAdapter<MetricUnit> {
         }
 
         MetricUnit mu = getItem(position);
+        Pair<Drawable, String> pair = (Pair) mu.getMetricValue();
 
         ImageView icon = (ImageView) convertView.getTag(R.id.process_icon);
-        icon.setImageDrawable((Drawable) mu.getMetricValue());
+        icon.setImageDrawable(pair.getLeft());
 
         TextView processName = (TextView) convertView.getTag(R.id.process_name);
         processName.setText(mu.getMetricAttr());
 
         TextView processId = (TextView) convertView.getTag(R.id.process_id);
-        processId.setText("1"); // TODO: Get the real pId
+        processId.setText(pair.getRight());
 
         return convertView;
     }
