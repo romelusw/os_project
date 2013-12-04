@@ -18,9 +18,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -112,12 +110,12 @@ public class CPUCollector implements IMetricCollector {
 
             for (final ActivityManager.RunningAppProcessInfo info : rApps) {
                 final String processName = info.processName;
-                final Map<Drawable, String> data = new HashMap<>();
                 try {
                     ai = pm.getApplicationInfo(processName, 0);
-                    data.put(pm.getApplicationIcon(processName), String.valueOf(info.pid));
                     retVal.add(new MetricUnit(new Date(System.currentTimeMillis()),
-                            CCMConstants.PROCESSES_ID, data,
+                            CCMConstants.PROCESSES_ID,
+                            new Pair<>(pm.getApplicationIcon(processName),
+                                    String.valueOf(info.pid)),
                             (String) pm.getApplicationLabel(ai)));
                 } catch (final PackageManager.NameNotFoundException e) {
                     logger.warn("Could not find package. ", e);
