@@ -31,7 +31,7 @@ public class CPUCollector implements IMetricCollector {
     private static final Logger logger = CCMUtils.getLogger(CPUCollector.class);
     private final Runtime ENV = Runtime.getRuntime();
     private final String USAGE_CMD = "top -m 1 -n 1 -d .01";
-    private final String PROC_INFO = "cat /proc/{0}/status";
+    private final String PROC_INFO = "echo \"$(cat /proc/{0}/status)\"";
     private final String SHELL_CMD = "/system/bin/sh";
 
     @Override
@@ -58,6 +58,7 @@ public class CPUCollector implements IMetricCollector {
                     new String[] {SHELL_CMD, "-c", command});
 
             if (results.getLeft()) {
+                logger.info(results.getRight());
                 retVal.add(new MetricUnit(new Date(System.currentTimeMillis()),
                         CCMConstants.PROC_INFO, results.getRight(), pid));
             } else {
