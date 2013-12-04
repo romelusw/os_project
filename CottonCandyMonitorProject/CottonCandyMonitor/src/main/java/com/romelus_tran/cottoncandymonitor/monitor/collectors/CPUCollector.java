@@ -58,7 +58,6 @@ public class CPUCollector implements IMetricCollector {
                     new String[] {SHELL_CMD, "-c", command});
 
             if (results.getLeft()) {
-                logger.info(results.getRight());
                 retVal.add(new MetricUnit(new Date(System.currentTimeMillis()),
                         CCMConstants.PROC_INFO, results.getRight(), pid));
             } else {
