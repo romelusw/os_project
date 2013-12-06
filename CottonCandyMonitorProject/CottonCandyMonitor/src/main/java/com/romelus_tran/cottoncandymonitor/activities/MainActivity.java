@@ -17,22 +17,21 @@ import android.widget.TextView;
 import com.romelus_tran.cottoncandymonitor.R;
 import com.romelus_tran.cottoncandymonitor.adapters.ProcessesAdapter;
 import com.romelus_tran.cottoncandymonitor.graphs.CPUUsageGraph;
-import com.romelus_tran.cottoncandymonitor.graphs.Point;
 import com.romelus_tran.cottoncandymonitor.monitor.CottonCandyMonitor;
 import com.romelus_tran.cottoncandymonitor.monitor.CottonCandyMonitorException;
 import com.romelus_tran.cottoncandymonitor.monitor.MetricUnit;
 import com.romelus_tran.cottoncandymonitor.monitor.collectors.CPUCollector;
+import com.romelus_tran.cottoncandymonitor.monitor.listeners.CPUUsageListener;
+import com.romelus_tran.cottoncandymonitor.monitor.listeners.IResultListener;
 import com.romelus_tran.cottoncandymonitor.utils.CCMUtils;
 import com.romelus_tran.cottoncandymonitor.utils.Pair;
 
-import org.achartengine.GraphicalView;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 import de.mindpipe.android.logging.log4j.LogConfigurator;
@@ -47,49 +46,58 @@ import de.mindpipe.android.logging.log4j.LogConfigurator;
 public class MainActivity extends ActionBarActivity {
 
     private final Logger logger = CCMUtils.getLogger(MainActivity.class);
-    ProcessesAdapter processesAdapter;
-    List<MetricUnit> processesList;
-    TextView numProcesses;
-    CPUUsageGraph cpuUsageGraph;
 
-    GraphicalView cpuUsageView;
+    private CottonCandyMonitor _ccm = CottonCandyMonitor.getInstance();
+
+    private ProcessesAdapter _processesAdapter;
+    private List<MetricUnit> _processesList;
+    private TextView _numProcesses;
+
+    private CPUUsageGraph _cpuUsageGraph;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         configureLogger();
 
-        if (CottonCandyMonitor.getInstance().register(new CPUCollector())) {
+        CPUCollector cpuCollector = new CPUCollector();
+
+        if (_ccm.register(cpuCollector)) {
             logger.info("Successfully registered CPUCollector");
         } else {
-            logger.error("Collector was not registered");
+            logger.error("Collector was not registered or is already registered");
         }
 
         setContentView(R.layout.activity_main);
 
-        cpuUsageGraph = new CPUUsageGraph();
-        cpuUsageView = cpuUsageGraph.getView(this);
-        ((LinearLayout) findViewById(R.id.chart)).addView(cpuUsageView);
+        // create cpu usage graph and setup listener with polling
+        _cpuUsageGraph = new CPUUsageGraph();
+        List<IResultListener> listeners = new ArrayList<>();
+        listeners.add(new CPUUsageListener(_cpuUsageGraph));
+        _ccm.registerPollingCollector(cpuCollector, listeners, 1);
+
+        // add the gpu view to the chart
+        ((LinearLayout) findViewById(R.id.chart)).addView(_cpuUsageGraph.getView(this));
 
         // store the TextView that displays total processes running on the device
-        numProcesses = (TextView) findViewById(R.id.num_processes);
+        _numProcesses = (TextView) findViewById(R.id.num_processes);
 
-        // initialize processesList
-        processesList = new ArrayList<>();
+        // initialize _processesList
+        _processesList = new ArrayList<>();
 
-        // Create the adapter based on processesList. Now whenever processesList is updated,
+        // Create the adapter based on _processesList. Now whenever _processesList is updated,
         // the adapter will notify the ListView to update.
-        processesAdapter = new ProcessesAdapter(this, R.layout.processes_list, processesList);
+        _processesAdapter = new ProcessesAdapter(this, R.layout.processes_list, _processesList);
 
         // Get the processesListView and set the arrayAdapter
         ListView processesListView = (ListView) findViewById(R.id.list_processes);
-        processesListView.setAdapter(processesAdapter);
+        processesListView.setAdapter(_processesAdapter);
 
         // Register onClick event for every item in the list.
         processesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                MetricUnit selectedProcess = processesList.get(position);
+                MetricUnit selectedProcess = _processesList.get(position);
 
                 Intent intent = new Intent(MainActivity.this, ProcessActivity.class);
                 Pair<Drawable, String> pair = (Pair) selectedProcess.getMetricValue();
@@ -136,39 +144,23 @@ public class MainActivity extends ActionBarActivity {
      * Update the processes list here and notify the adapter that the list has changed.
      */
     private void refreshList() {
-        processesList.clear();
+        _processesList.clear();
 
         try {
-            // Instead of re-setting processesList to getData, we just add all contents from getData
-            processesList.addAll(CottonCandyMonitor.getInstance().getData(CPUCollector.class,
+            // Instead of re-setting _processesList to getData, we just add all contents from getData
+            _processesList.addAll(CottonCandyMonitor.getInstance().getData(CPUCollector.class,
                     "getRunningProcesses", new Object[]{this.getApplicationContext()}, Context.class));
+
             logger.info("refreshList(): Successfully received data");
         } catch (ExecutionException | InterruptedException | CottonCandyMonitorException e) {
             logger.error("refreshList():", e);
         }
 
         // notify the adapter that we just updated the processes list
-        processesAdapter.notifyDataSetChanged();
+        _processesAdapter.notifyDataSetChanged();
 
         // update the text showing how many processes are running
-        numProcesses.setText(getResources().getString(R.string.num_processes) + processesList.size());
-
-        // NOTE: The following will be placed inside a listener class
-        // TODO: Setup a listener to do the following: get the data and call setGraph passing the appropriate data and then repaint
-        cpuUsageGraph.setGraph(getRandomData()); // getRandomData() is a fake call to populate a random array
-        cpuUsageView.repaint();
-    }
-	
-	private ArrayList<Point> getRandomData() {
-        ArrayList<Point> retVal = new ArrayList<>();
-
-        Random r = new Random();
-
-        for (int i = 0; i < 20; ++i) {
-            retVal.add(new Point(i, r.nextInt(100)));
-        }
-
-        return retVal;
+        _numProcesses.setText(getResources().getString(R.string.num_processes) + _processesList.size());
     }
 
     /**
@@ -180,7 +172,7 @@ public class MainActivity extends ActionBarActivity {
         logConfigurator.setFileName(Environment.getExternalStorageDirectory()
                 + File.separator + getResources().getString(R.string.app_name)
                 .toLowerCase().replace(" ", "_") + ".log");
-        logConfigurator.setRootLevel(Level.DEBUG);
+        logConfigurator.setRootLevel(Level.ERROR);
         // Set log level of a specific logger
         logConfigurator.setLevel("org.apache.log4j.Logger", Level.ERROR);
         logConfigurator.configure();
