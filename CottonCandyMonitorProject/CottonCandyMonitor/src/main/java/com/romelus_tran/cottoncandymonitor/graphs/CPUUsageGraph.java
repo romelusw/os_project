@@ -93,6 +93,7 @@ public class CPUUsageGraph {
         mRenderer.setYAxisMin(0);
         mRenderer.setYAxisMax(1);
         mRenderer.setPanEnabled(false); // disable panning the chart
+        mRenderer.setZoomEnabled(false, false);
 
         _view = ChartFactory.getLineChartView(context, dataset, mRenderer);
         return _view;
