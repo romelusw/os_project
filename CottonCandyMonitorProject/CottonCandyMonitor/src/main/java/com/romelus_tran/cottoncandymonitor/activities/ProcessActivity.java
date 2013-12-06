@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
+import android.text.method.ScrollingMovementMethod;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -38,6 +39,7 @@ public class ProcessActivity extends Activity {
         String processId = getIntent().getStringExtra("processId");
 
         TextView textView = (TextView) findViewById(R.id.data);
+        textView.setMovementMethod(new ScrollingMovementMethod());
 
         List<MetricUnit> muList = new ArrayList<>();
 
