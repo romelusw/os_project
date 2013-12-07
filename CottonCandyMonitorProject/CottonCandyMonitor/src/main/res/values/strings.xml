@@ -5,6 +5,14 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="refresh_list">Refresh</string>
+    <string name="cpu_usage_history">CPU Usage History</string>
     <string name="num_processes">Total Running Processes:</string>
+    <string name="process_name">Process name</string>
+    <string name="process_id">Process ID</string>
+    <string name="process_icon">Icon</string>
+    <string name="cpu_usage_user">User</string>
+    <string name="cpu_usage_system">System</string>
+    <string name="cpu_usage_iow">IOW</string>
+    <string name="cpu_usage_irq">IRQ</string>
 
 </resources>

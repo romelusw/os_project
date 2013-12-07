@@ -143,8 +143,7 @@ public class CPUCollector implements IMetricCollector {
                 metric = metric.trim().replace("%", "");
                 data = metric.split(" ");
                 retVal.add(new MetricUnit(new Date(System.currentTimeMillis()),
-                        CCMConstants.USAGE_ID, (Float.parseFloat(data[1]) / 100),
-                        data[0]));
+                        CCMConstants.USAGE_ID, data[1], data[0]));
             }
         }
         return retVal;

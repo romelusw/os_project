@@ -3,9 +3,8 @@ package com.romelus_tran.cottoncandymonitor.graphs;
 import android.content.Context;
 
 import com.romelus_tran.cottoncandymonitor.R;
-import com.romelus_tran.cottoncandymonitor.activities.MainActivity;
 import com.romelus_tran.cottoncandymonitor.monitor.MetricUnit;
-import com.romelus_tran.cottoncandymonitor.utils.CCMUtils;
+import com.romelus_tran.cottoncandymonitor.utils.FontUtils;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
@@ -14,11 +13,7 @@ import org.achartengine.model.TimeSeries;
 import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
-import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -45,10 +40,10 @@ public class CPUUsageGraph {
      */
     public GraphicalView getView(Context context) {
         // Initialize the series
-        _userCPUSeries = new TimeSeries("User CPU Usage");
-        _systemCPUSeries = new TimeSeries("System CPU Usage");
-        _iowCPUSeries = new TimeSeries("IOW CPU Usage");
-        _irqCPUSeries = new TimeSeries("IRQ CPU Usage");
+        _userCPUSeries = new TimeSeries(context.getResources().getString(R.string.cpu_usage_user));
+        _systemCPUSeries = new TimeSeries(context.getResources().getString(R.string.cpu_usage_system));
+        _iowCPUSeries = new TimeSeries(context.getResources().getString(R.string.cpu_usage_iow));
+        _irqCPUSeries = new TimeSeries(context.getResources().getString(R.string.cpu_usage_irq));
 
         // Create dataset and add _userCPUSeries to dataset
         XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
@@ -60,24 +55,20 @@ public class CPUUsageGraph {
         // create renderer for the _userCPUSeries
         // Change renderer settings to tweak the line aesthetic
         XYSeriesRenderer userRenderer = new XYSeriesRenderer();
-        userRenderer.setColor(context.getResources().getColor(R.color.lineColor1)); // Set the color of the line to white
-        userRenderer.setLineWidth(5);
-        userRenderer.setPointStyle(PointStyle.POINT);
+        userRenderer.setColor(context.getResources().getColor(R.color.userColor));
+        userRenderer.setLineWidth(3);
 
         XYSeriesRenderer systemRenderer = new XYSeriesRenderer();
-        systemRenderer.setColor(context.getResources().getColor(R.color.lineColor2)); // Set the color of the line to white
-        systemRenderer.setLineWidth(5);
-        systemRenderer.setPointStyle(PointStyle.POINT);
+        systemRenderer.setColor(context.getResources().getColor(R.color.systemColor));
+        systemRenderer.setLineWidth(3);
 
         XYSeriesRenderer iowRenderer = new XYSeriesRenderer();
-        iowRenderer.setColor(context.getResources().getColor(R.color.lineColor3)); // Set the color of the line to white
-        iowRenderer.setLineWidth(5);
-        iowRenderer.setPointStyle(PointStyle.POINT);
+        iowRenderer.setColor(context.getResources().getColor(R.color.iowColor));
+        iowRenderer.setLineWidth(3);
 
         XYSeriesRenderer irqRenderer = new XYSeriesRenderer();
-        irqRenderer.setColor(context.getResources().getColor(R.color.lineColor4)); // Set the color of the line to white
-        irqRenderer.setLineWidth(5);
-        irqRenderer.setPointStyle(PointStyle.POINT);
+        irqRenderer.setColor(context.getResources().getColor(R.color.irqColor));
+        irqRenderer.setLineWidth(3);
 
         // add renderers to MultipleSeriesRenderer
         XYMultipleSeriesRenderer mRenderer = new XYMultipleSeriesRenderer();
@@ -88,12 +79,18 @@ public class CPUUsageGraph {
 
         // change mRenderer settings to tweak the graph aesthetic
         mRenderer.setApplyBackgroundColor(true);
-        mRenderer.setBackgroundColor(context.getResources().getColor(R.color.backgroundColor));
-        mRenderer.setMarginsColor(context.getResources().getColor(R.color.backgroundColor));
+        mRenderer.setBackgroundColor(context.getResources().getColor(R.color.graphBackgroundColor));
+        mRenderer.setMarginsColor(context.getResources().getColor(R.color.graphBackgroundColor));
+        mRenderer.setXLabels(0);
+        mRenderer.setYLabels(0);
         mRenderer.setYAxisMin(0);
-        mRenderer.setYAxisMax(1);
+        mRenderer.setYAxisMax(100);
         mRenderer.setPanEnabled(false); // disable panning the chart
-        mRenderer.setZoomEnabled(false, false);
+        mRenderer.setZoomEnabled(false, false); // disable zooming
+        mRenderer.setShowLegend(true); // show the legend
+        mRenderer.setFitLegend(true); // make sure it fits
+        mRenderer.setLegendTextSize(18);
+        mRenderer.setTextTypeface(FontUtils.loadFontFromAssets(FontUtils.FONT_CAVIAR_DREAMS_BOLD));
 
         _view = ChartFactory.getLineChartView(context, dataset, mRenderer);
         return _view;
@@ -108,10 +105,10 @@ public class CPUUsageGraph {
      * @param data with the cpu usage per type
      */
     public void updateGraph(List<MetricUnit> data) {
-        float user = (float) data.get(0).getMetricValue();
-        float system = (float) data.get(1).getMetricValue();
-        float iow = (float) data.get(2).getMetricValue();
-        float irq = (float) data.get(3).getMetricValue();
+        int user = Integer.parseInt((String) data.get(0).getMetricValue());
+        int system = Integer.parseInt((String) data.get(1).getMetricValue());
+        int iow = Integer.parseInt((String) data.get(2).getMetricValue());
+        int irq = Integer.parseInt((String) data.get(3).getMetricValue());
 
         // since these are the latest values (in terms of time), we can add them to the _userCPUSeries at the highest index.
         if (_userCPUSeries.getItemCount() > TOTAL_POINTS) {

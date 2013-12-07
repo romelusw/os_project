@@ -1,12 +1,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+    android:background="@color/listHeaderBackgroundColor">
 
+    <!-- Data -->
     <TextView
         android:id="@+id/data"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:maxLines="100"
-        android:scrollbars="vertical"/>
+        android:maxLines="500"
+        android:scrollbars="vertical"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/listTextColor"/>
 </LinearLayout>

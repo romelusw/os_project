@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.romelus_tran.cottoncandymonitor.R;
@@ -24,6 +25,7 @@ import com.romelus_tran.cottoncandymonitor.monitor.collectors.CPUCollector;
 import com.romelus_tran.cottoncandymonitor.monitor.listeners.CPUUsageListener;
 import com.romelus_tran.cottoncandymonitor.monitor.listeners.IResultListener;
 import com.romelus_tran.cottoncandymonitor.utils.CCMUtils;
+import com.romelus_tran.cottoncandymonitor.utils.FontUtils;
 import com.romelus_tran.cottoncandymonitor.utils.Pair;
 
 import org.apache.log4j.Level;
@@ -70,6 +72,8 @@ public class MainActivity extends ActionBarActivity {
 
         setContentView(R.layout.activity_main);
 
+        FontUtils.getContext(getApplicationContext());
+
         // create cpu usage graph and setup listener with polling
         _cpuUsageGraph = new CPUUsageGraph();
         List<IResultListener> listeners = new ArrayList<>();
@@ -79,8 +83,22 @@ public class MainActivity extends ActionBarActivity {
         // add the gpu view to the chart
         ((LinearLayout) findViewById(R.id.chart)).addView(_cpuUsageGraph.getView(this));
 
+        ((TextView) findViewById(R.id.cpu_usage_history)).setTypeface(
+                FontUtils.loadFontFromAssets(FontUtils.FONT_CAVIAR_DREAMS));
+
         // store the TextView that displays total processes running on the device
         _numProcesses = (TextView) findViewById(R.id.num_processes);
+        _numProcesses.setTypeface(FontUtils.loadFontFromAssets(FontUtils.FONT_CAVIAR_DREAMS));
+
+        // updating all headers with the correct typeface
+        ((TextView) findViewById(R.id.header_process_icon)).setTypeface(
+                FontUtils.loadFontFromAssets(FontUtils.FONT_CAVIAR_DREAMS));
+
+        ((TextView) findViewById(R.id.header_process_name)).setTypeface(
+                FontUtils.loadFontFromAssets(FontUtils.FONT_CAVIAR_DREAMS));
+
+        ((TextView) findViewById(R.id.header_process_id)).setTypeface(
+                FontUtils.loadFontFromAssets(FontUtils.FONT_CAVIAR_DREAMS));
 
         // initialize _processesList
         _processesList = new ArrayList<>();

@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.romelus_tran.cottoncandymonitor.R;
 import com.romelus_tran.cottoncandymonitor.monitor.MetricUnit;
+import com.romelus_tran.cottoncandymonitor.utils.FontUtils;
 import com.romelus_tran.cottoncandymonitor.utils.Pair;
 
 import java.util.List;
@@ -42,7 +43,6 @@ public class ProcessesAdapter extends ArrayAdapter<MetricUnit> {
             convertView.setTag(R.id.process_name, convertView.findViewById(R.id.process_name));
 
             // This assumes layout/processes_list.xml includes TextView with an id of "process_id"
-            // TODO: integrate process_id once we get the data
             convertView.setTag(R.id.process_id, convertView.findViewById(R.id.process_id));
         }
 
@@ -53,9 +53,11 @@ public class ProcessesAdapter extends ArrayAdapter<MetricUnit> {
         icon.setImageDrawable(pair.getLeft());
 
         TextView processName = (TextView) convertView.getTag(R.id.process_name);
+        processName.setTypeface(FontUtils.loadFontFromAssets(FontUtils.FONT_CAVIAR_DREAMS_BOLD));
         processName.setText(mu.getMetricAttr());
 
         TextView processId = (TextView) convertView.getTag(R.id.process_id);
+        processId.setTypeface(FontUtils.loadFontFromAssets(FontUtils.FONT_CAVIAR_DREAMS_BOLD));
         processId.setText(pair.getRight());
 
         return convertView;

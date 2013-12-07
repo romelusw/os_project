@@ -3,33 +3,76 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- CPU Usage Header -->
+    <TextView
+        android:id="@+id/cpu_usage_history"
+        android:text="@string/cpu_usage_history"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:paddingLeft="10dp"
+        android:textColor="@color/headerTextColor"
+        android:background="@color/headerBackgroundColor"/>
+
+    <!-- CPU Usage Chart -->
     <LinearLayout
         android:id="@+id/chart"
         android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="100dp"/>
 
-    <!-- Separator -->
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="2dp"
-        android:background="@color/mainDividerColor"/>
-
+    <!-- Total Processes -->
     <TextView
         android:id="@+id/num_processes"
         android:text="@string/num_processes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@color/textColor"
-        android:background="@color/backgroundColor"/>
+        android:textColor="@color/headerTextColor"
+        android:background="@color/headerBackgroundColor"/>
 
-    <!-- Separator -->
-    <View
+    <!-- Processes List Header -->
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
-        android:layout_height="2dp"
-        android:background="@color/mainDividerColor"/>
+        android:layout_height="wrap_content"
+        android:background="@color/listHeaderBackgroundColor">
 
+        <!-- Process Icon Header -->
+        <TextView
+            android:id="@+id/header_process_icon"
+            android:layout_width="48dp"
+            android:layout_height="wrap_content"
+            android:text="@string/process_icon"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/listTextColor"
+            android:paddingLeft="10dp"/>
+
+        <!-- Process Name Header -->
+        <TextView
+            android:id="@+id/header_process_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/process_name"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/listTextColor"
+            android:layout_toLeftOf="@+id/header_process_id"
+            android:layout_toRightOf="@id/header_process_icon"/>
+
+        <!-- Process ID Header -->
+        <TextView
+            android:id="@id/header_process_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/process_id"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/listTextColor"
+            android:layout_alignParentRight="true"
+            android:paddingRight="10dp"/>
+
+    </RelativeLayout>
+
+    <!-- Processes List -->
     <ListView
         android:id="@+id/list_processes"
         android:layout_width="fill_parent"

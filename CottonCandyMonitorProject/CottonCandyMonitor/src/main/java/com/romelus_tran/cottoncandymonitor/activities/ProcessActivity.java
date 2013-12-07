@@ -17,6 +17,7 @@ import com.romelus_tran.cottoncandymonitor.monitor.CottonCandyMonitorException;
 import com.romelus_tran.cottoncandymonitor.monitor.MetricUnit;
 import com.romelus_tran.cottoncandymonitor.monitor.collectors.CPUCollector;
 import com.romelus_tran.cottoncandymonitor.utils.CCMUtils;
+import com.romelus_tran.cottoncandymonitor.utils.FontUtils;
 
 import org.apache.log4j.Logger;
 
@@ -39,6 +40,7 @@ public class ProcessActivity extends Activity {
         String processId = getIntent().getStringExtra("processId");
 
         TextView textView = (TextView) findViewById(R.id.data);
+        textView.setTypeface(FontUtils.loadFontFromAssets(FontUtils.FONT_CAVIAR_DREAMS));
         textView.setMovementMethod(new ScrollingMovementMethod());
 
         List<MetricUnit> muList = new ArrayList<>();
