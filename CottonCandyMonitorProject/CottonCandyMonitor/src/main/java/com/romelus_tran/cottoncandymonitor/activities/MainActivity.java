@@ -165,7 +165,7 @@ public class MainActivity extends ActionBarActivity {
 
         try {
             // Instead of re-setting _processesList to getData, we just add all contents from getData
-            _processesList.addAll(MonitorUtil.getInstance().getData(CPUCollector.class,
+            _processesList.addAll(_mu.getData(CPUCollector.class,
                     "getRunningProcesses", new Object[]{this.getApplicationContext()}, Context.class));
 
             logger.info("refreshList(): Successfully received data");
