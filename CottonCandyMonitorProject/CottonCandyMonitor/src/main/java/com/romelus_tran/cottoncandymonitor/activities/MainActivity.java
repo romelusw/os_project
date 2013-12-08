@@ -46,6 +46,7 @@ import de.mindpipe.android.logging.log4j.LogConfigurator;
  */
 public class MainActivity extends ActionBarActivity {
 
+    private static final int POLLING_INTERVAL = 1;
     private final Logger logger = MUUtils.getLogger(MainActivity.class);
 
     private MonitorUtil _mu = MonitorUtil.getInstance();
@@ -77,7 +78,7 @@ public class MainActivity extends ActionBarActivity {
         _cpuUsageGraph = new CPUUsageGraph();
         List<IResultListener> listeners = new ArrayList<>();
         listeners.add(new CPUUsageListener(_cpuUsageGraph));
-        _mu.registerPollingCollector(cpuCollector, listeners, 1);
+        _mu.registerPollingCollector(cpuCollector, listeners, POLLING_INTERVAL);
 
         // add the gpu view to the chart
         ((LinearLayout) findViewById(R.id.chart)).addView(_cpuUsageGraph.getView(this));
@@ -166,7 +167,7 @@ public class MainActivity extends ActionBarActivity {
         try {
             // Instead of re-setting _processesList to getData, we just add all contents from getData
             _processesList.addAll(_mu.getData(CPUCollector.class,
-                    "getRunningProcesses", new Object[]{this.getApplicationContext()}, Context.class));
+                    CPUCollector.GET_RUNNING_PROCESSES, new Object[]{this.getApplicationContext()}, Context.class));
 
             logger.info("refreshList(): Successfully received data");
         } catch (ExecutionException | InterruptedException | MonitorUtilException e) {

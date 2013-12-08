@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /**
+ * This activity displays all the pertinent information for a passed in process.
+ *
  * Created by Brian on 11/24/13.
  */
 public class ProcessActivity extends Activity {
@@ -43,7 +45,7 @@ public class ProcessActivity extends Activity {
 
         try {
             muList = MonitorUtil.getInstance().getData(CPUCollector.class,
-                    "getProcessInfo",new Object[]{processId},String.class);
+                    CPUCollector.GET_PROCESS_INFO,new Object[]{processId},String.class);
 
             logger.info("Successfully retrieved process information");
         } catch (ExecutionException | InterruptedException | MonitorUtilException e) {

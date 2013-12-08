@@ -33,6 +33,11 @@ public class CPUCollector implements IMetricCollector {
     private final String PROC_INFO = "echo \"$(cat -e /proc/{0}/status)\"";
     private final String SHELL_CMD = "/system/bin/sh";
 
+    // define all accessible functions
+    public static final String GET_CPU_USAGE = "getCPUUsage";
+    public static final String GET_RUNNING_PROCESSES = "getRunningProcesses";
+    public static final String GET_PROCESS_INFO = "getProcessInfo";
+
     @Override
     public List<MetricUnit> collectData(final Context context) {
         final List<MetricUnit> retVal = new ArrayList<>();
