@@ -5,7 +5,7 @@ import android.content.Context;
 import com.romelus_tran.cottoncandymonitor.monitor.collectors.IMetricCollector;
 import com.romelus_tran.cottoncandymonitor.monitor.listeners.IResultListener;
 import com.romelus_tran.cottoncandymonitor.monitor.listeners.ResultListenerResponse;
-import com.romelus_tran.cottoncandymonitor.utils.CCMUtils;
+import com.romelus_tran.cottoncandymonitor.monitor.utils.MUUtils;
 
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
@@ -28,12 +28,12 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Woody Romelus
  */
-public class CottonCandyMonitor {
+public class MonitorUtil {
 
-    private final Logger logger = CCMUtils.getLogger(CottonCandyMonitor.class);
+    private final Logger logger = MUUtils.getLogger(MonitorUtil.class);
     private final int threadPoolSize = 1;
     private final int shutdownWaitPeriod = 12;
-    private static CottonCandyMonitor instance;
+    private static MonitorUtil instance;
     private ScheduledExecutorService scheduler;
     private ExecutorService executors;
     private final Set<String> registered = new HashSet<>();
@@ -42,7 +42,7 @@ public class CottonCandyMonitor {
     /**
      * Default Constructor.
      */
-    private CottonCandyMonitor() {
+    private MonitorUtil() {
         // Instantiation not allowed
     }
 
@@ -51,9 +51,9 @@ public class CottonCandyMonitor {
      *
      * @return the singleton
      */
-    public static CottonCandyMonitor getInstance() {
+    public static MonitorUtil getInstance() {
         if (instance == null) {
-            instance = new CottonCandyMonitor();
+            instance = new MonitorUtil();
         }
         return instance;
     }
@@ -169,7 +169,7 @@ public class CottonCandyMonitor {
      * @throws ExecutionException          the task was aborted prior to retrieving
      *                                     its results
      * @throws InterruptedException        if the waiting thread was interrupted
-     * @throws CottonCandyMonitorException if the collector class was not
+     * @throws MonitorUtilException if the collector class was not
      *                                     already registered prior to calling this method
      */
     public List<MetricUnit> getData(final Class<?> regCollector,
@@ -177,7 +177,7 @@ public class CottonCandyMonitor {
                                     final Object[] args,
                                     final Class... argTypes)
             throws ExecutionException, InterruptedException,
-            CottonCandyMonitorException {
+            MonitorUtilException {
 
         if (registered.contains(regCollector.getSimpleName())) {
             List<MetricUnit> retVal;
@@ -210,7 +210,7 @@ public class CottonCandyMonitor {
             }
             return f.get();
         } else {
-            throw new CottonCandyMonitorException("Collector: ["
+            throw new MonitorUtilException("Collector: ["
                     + regCollector.getSimpleName()
                     + "] does not exist, please register it.");
         }
@@ -275,7 +275,7 @@ public class CottonCandyMonitor {
                         + " Collection Time: ["
                         + (sw.getSplitTime() - sw.getStartTime())
                         + "ms] Total  time: [" + sw.getTime() + "ms]");
-            } catch (final CottonCandyMonitorException e) {
+            } catch (final MonitorUtilException e) {
                 logger.error("Could not send data to listener(s).", e);
             }
         }
@@ -284,11 +284,11 @@ public class CottonCandyMonitor {
          * Sends the acquired data to the listeners.
          *
          * @param dataObj the data to persist
-         * @throws CottonCandyMonitorException when the listeners can not
+         * @throws MonitorUtilException when the listeners can not
          *                                     be reached
          */
         private void notifyListeners(final List<MetricUnit> dataObj)
-                throws CottonCandyMonitorException {
+                throws MonitorUtilException {
             if (listenersList != null) {
                 for (final IResultListener listener : listenersList) {
                     final ResultListenerResponse r = listener.receive(dataObj);
@@ -296,7 +296,7 @@ public class CottonCandyMonitor {
                             + "] :: [" + r.getMessage() + "]");
                 }
             } else {
-                throw new CottonCandyMonitorException("Listener list is null.");
+                throw new MonitorUtilException("Listener list is null.");
             }
         }
     }

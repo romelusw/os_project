@@ -1,22 +1,18 @@
 package com.romelus_tran.cottoncandymonitor.activities;
 
-import android.app.ActionBar;
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
-import android.support.v7.app.ActionBarActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.romelus_tran.cottoncandymonitor.R;
-import com.romelus_tran.cottoncandymonitor.monitor.CottonCandyMonitor;
-import com.romelus_tran.cottoncandymonitor.monitor.CottonCandyMonitorException;
+import com.romelus_tran.cottoncandymonitor.monitor.MonitorUtil;
+import com.romelus_tran.cottoncandymonitor.monitor.MonitorUtilException;
 import com.romelus_tran.cottoncandymonitor.monitor.MetricUnit;
 import com.romelus_tran.cottoncandymonitor.monitor.collectors.CPUCollector;
-import com.romelus_tran.cottoncandymonitor.utils.CCMUtils;
+import com.romelus_tran.cottoncandymonitor.monitor.utils.MUUtils;
 import com.romelus_tran.cottoncandymonitor.utils.FontUtils;
 
 import org.apache.log4j.Logger;
@@ -30,7 +26,7 @@ import java.util.concurrent.ExecutionException;
  */
 public class ProcessActivity extends Activity {
 
-    private final Logger logger = CCMUtils.getLogger(ProcessActivity.class);
+    private final Logger logger = MUUtils.getLogger(ProcessActivity.class);
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -46,11 +42,11 @@ public class ProcessActivity extends Activity {
         List<MetricUnit> muList = new ArrayList<>();
 
         try {
-            muList = CottonCandyMonitor.getInstance().getData(CPUCollector.class,
+            muList = MonitorUtil.getInstance().getData(CPUCollector.class,
                     "getProcessInfo",new Object[]{processId},String.class);
 
             logger.info("Successfully retrieved process information");
-        } catch (ExecutionException | InterruptedException | CottonCandyMonitorException e) {
+        } catch (ExecutionException | InterruptedException | MonitorUtilException e) {
             logger.error(e);
         }
 

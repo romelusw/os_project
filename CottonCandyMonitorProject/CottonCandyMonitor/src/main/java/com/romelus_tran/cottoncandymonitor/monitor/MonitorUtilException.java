@@ -5,14 +5,14 @@ package com.romelus_tran.cottoncandymonitor.monitor;
  *
  * @author Woody Romelus
  */
-public class CottonCandyMonitorException extends Exception {
+public class MonitorUtilException extends Exception {
 
     /**
      * Default Constructor.
      *
      * @param message the message
      */
-    public CottonCandyMonitorException(final String message) {
+    public MonitorUtilException(final String message) {
         super(message);
     }
 }

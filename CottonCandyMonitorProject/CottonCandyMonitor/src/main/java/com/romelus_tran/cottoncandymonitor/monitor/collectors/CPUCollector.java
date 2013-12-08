@@ -4,12 +4,11 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 
 import com.romelus_tran.cottoncandymonitor.monitor.MetricUnit;
-import com.romelus_tran.cottoncandymonitor.utils.CCMConstants;
-import com.romelus_tran.cottoncandymonitor.utils.CCMUtils;
-import com.romelus_tran.cottoncandymonitor.utils.Pair;
+import com.romelus_tran.cottoncandymonitor.monitor.utils.MUConstants;
+import com.romelus_tran.cottoncandymonitor.monitor.utils.MUUtils;
+import com.romelus_tran.cottoncandymonitor.monitor.utils.Pair;
 
 import org.apache.log4j.Logger;
 
@@ -28,7 +27,7 @@ import java.util.regex.Pattern;
  * @author Woody Romelus
  */
 public class CPUCollector implements IMetricCollector {
-    private static final Logger logger = CCMUtils.getLogger(CPUCollector.class);
+    private static final Logger logger = MUUtils.getLogger(CPUCollector.class);
     private final Runtime ENV = Runtime.getRuntime();
     private final String USAGE_CMD = "top -m 1 -n 1 -d .01";
     private final String PROC_INFO = "echo \"$(cat -e /proc/{0}/status)\"";
@@ -59,7 +58,7 @@ public class CPUCollector implements IMetricCollector {
 
             if (results.getLeft()) {
                 retVal.add(new MetricUnit(new Date(System.currentTimeMillis()),
-                        CCMConstants.PROC_INFO, results.getRight()
+                        MUConstants.PROC_INFO, results.getRight()
                         .replace("$", "\n"), pid));
             } else {
                 logger.error("Failed to collect process info. "
@@ -114,7 +113,7 @@ public class CPUCollector implements IMetricCollector {
                 try {
                     ai = pm.getApplicationInfo(processName, 0);
                     retVal.add(new MetricUnit(new Date(System.currentTimeMillis()),
-                            CCMConstants.PROCESSES_ID,
+                            MUConstants.PROCESSES_ID,
                             new Pair<>(pm.getApplicationIcon(processName),
                                     String.valueOf(info.pid)),
                             (String) pm.getApplicationLabel(ai)));
@@ -143,7 +142,7 @@ public class CPUCollector implements IMetricCollector {
                 metric = metric.trim().replace("%", "");
                 data = metric.split(" ");
                 retVal.add(new MetricUnit(new Date(System.currentTimeMillis()),
-                        CCMConstants.USAGE_ID, data[1], data[0]));
+                        MUConstants.USAGE_ID, data[1], data[0]));
             }
         }
         return retVal;
@@ -166,10 +165,10 @@ public class CPUCollector implements IMetricCollector {
                 p.waitFor(); // Ensure process terminates before continuing
                 if (p.exitValue() != 0) {
                     retVal = new Pair<>(false,
-                            CCMUtils.convertStreamToString(p.getErrorStream()));
+                            MUUtils.convertStreamToString(p.getErrorStream()));
                 } else {
                     retVal = new Pair<>(true,
-                            CCMUtils.convertStreamToString(p.getInputStream()));
+                            MUUtils.convertStreamToString(p.getInputStream()));
                 }
             } catch (final IOException e) {
                 logger.error("The command could not be executed.", e);

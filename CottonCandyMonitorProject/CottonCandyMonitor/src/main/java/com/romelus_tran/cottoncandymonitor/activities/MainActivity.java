@@ -12,21 +12,20 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.romelus_tran.cottoncandymonitor.R;
 import com.romelus_tran.cottoncandymonitor.adapters.ProcessesAdapter;
 import com.romelus_tran.cottoncandymonitor.graphs.CPUUsageGraph;
-import com.romelus_tran.cottoncandymonitor.monitor.CottonCandyMonitor;
-import com.romelus_tran.cottoncandymonitor.monitor.CottonCandyMonitorException;
+import com.romelus_tran.cottoncandymonitor.monitor.MonitorUtil;
+import com.romelus_tran.cottoncandymonitor.monitor.MonitorUtilException;
 import com.romelus_tran.cottoncandymonitor.monitor.MetricUnit;
 import com.romelus_tran.cottoncandymonitor.monitor.collectors.CPUCollector;
 import com.romelus_tran.cottoncandymonitor.monitor.listeners.CPUUsageListener;
 import com.romelus_tran.cottoncandymonitor.monitor.listeners.IResultListener;
-import com.romelus_tran.cottoncandymonitor.utils.CCMUtils;
+import com.romelus_tran.cottoncandymonitor.monitor.utils.MUUtils;
 import com.romelus_tran.cottoncandymonitor.utils.FontUtils;
-import com.romelus_tran.cottoncandymonitor.utils.Pair;
+import com.romelus_tran.cottoncandymonitor.monitor.utils.Pair;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -47,9 +46,9 @@ import de.mindpipe.android.logging.log4j.LogConfigurator;
  */
 public class MainActivity extends ActionBarActivity {
 
-    private final Logger logger = CCMUtils.getLogger(MainActivity.class);
+    private final Logger logger = MUUtils.getLogger(MainActivity.class);
 
-    private CottonCandyMonitor _ccm = CottonCandyMonitor.getInstance();
+    private MonitorUtil _mu = MonitorUtil.getInstance();
 
     private ProcessesAdapter _processesAdapter;
     private List<MetricUnit> _processesList;
@@ -64,7 +63,7 @@ public class MainActivity extends ActionBarActivity {
 
         CPUCollector cpuCollector = new CPUCollector();
 
-        if (_ccm.register(cpuCollector)) {
+        if (_mu.register(cpuCollector)) {
             logger.info("Successfully registered CPUCollector");
         } else {
             logger.error("Collector was not registered or is already registered");
@@ -78,7 +77,7 @@ public class MainActivity extends ActionBarActivity {
         _cpuUsageGraph = new CPUUsageGraph();
         List<IResultListener> listeners = new ArrayList<>();
         listeners.add(new CPUUsageListener(_cpuUsageGraph));
-        _ccm.registerPollingCollector(cpuCollector, listeners, 1);
+        _mu.registerPollingCollector(cpuCollector, listeners, 1);
 
         // add the gpu view to the chart
         ((LinearLayout) findViewById(R.id.chart)).addView(_cpuUsageGraph.getView(this));
@@ -166,11 +165,11 @@ public class MainActivity extends ActionBarActivity {
 
         try {
             // Instead of re-setting _processesList to getData, we just add all contents from getData
-            _processesList.addAll(CottonCandyMonitor.getInstance().getData(CPUCollector.class,
+            _processesList.addAll(MonitorUtil.getInstance().getData(CPUCollector.class,
                     "getRunningProcesses", new Object[]{this.getApplicationContext()}, Context.class));
 
             logger.info("refreshList(): Successfully received data");
-        } catch (ExecutionException | InterruptedException | CottonCandyMonitorException e) {
+        } catch (ExecutionException | InterruptedException | MonitorUtilException e) {
             logger.error("refreshList():", e);
         }
 

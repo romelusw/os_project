@@ -1,4 +1,4 @@
-package com.romelus_tran.cottoncandymonitor.utils;
+package com.romelus_tran.cottoncandymonitor.monitor.utils;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -13,8 +13,8 @@ import java.io.InputStreamReader;
  *
  * @author Woody Romelus
  */
-public class CCMUtils {
-    private final static Logger logger = getLogger(CCMUtils.class);
+public class MUUtils {
+    private final static Logger logger = getLogger(MUUtils.class);
 
     /**
      * Creates a logger facade.

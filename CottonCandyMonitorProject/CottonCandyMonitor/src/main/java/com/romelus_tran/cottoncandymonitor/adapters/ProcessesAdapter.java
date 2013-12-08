@@ -1,7 +1,6 @@
 package com.romelus_tran.cottoncandymonitor.adapters;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +12,7 @@ import android.widget.TextView;
 import com.romelus_tran.cottoncandymonitor.R;
 import com.romelus_tran.cottoncandymonitor.monitor.MetricUnit;
 import com.romelus_tran.cottoncandymonitor.utils.FontUtils;
-import com.romelus_tran.cottoncandymonitor.utils.Pair;
+import com.romelus_tran.cottoncandymonitor.monitor.utils.Pair;
 
 import java.util.List;
 

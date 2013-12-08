@@ -1,4 +1,4 @@
-package com.romelus_tran.cottoncandymonitor.utils;
+package com.romelus_tran.cottoncandymonitor.monitor.utils;
 
 /**
  * An immutable simple tuple (pair) data structure.
