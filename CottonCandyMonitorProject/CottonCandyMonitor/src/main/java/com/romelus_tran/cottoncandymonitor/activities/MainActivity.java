@@ -1,5 +1,6 @@
 package com.romelus_tran.cottoncandymonitor.activities;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 
 import com.romelus_tran.cottoncandymonitor.R;
 import com.romelus_tran.cottoncandymonitor.adapters.ProcessesAdapter;
+import com.romelus_tran.cottoncandymonitor.dialogs.AboutDialogFragment;
 import com.romelus_tran.cottoncandymonitor.graphs.CPUUsageGraph;
 import com.romelus_tran.cottoncandymonitor.monitor.MonitorUtil;
 import com.romelus_tran.cottoncandymonitor.monitor.MonitorUtilException;
@@ -56,6 +58,8 @@ public class MainActivity extends ActionBarActivity {
     private TextView _numProcesses;
 
     private CPUUsageGraph _cpuUsageGraph;
+
+    private AboutDialogFragment _aboutDialog;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -144,7 +148,12 @@ public class MainActivity extends ActionBarActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
-            case R.id.action_settings:
+            case R.id.action_about:
+                if (_aboutDialog == null) {
+                    _aboutDialog = new AboutDialogFragment();
+                }
+
+                _aboutDialog.show(getFragmentManager(), "about");
                 return true;
 
             case R.id.refresh_list:
@@ -183,15 +192,12 @@ public class MainActivity extends ActionBarActivity {
      * Configures the logger system with default settings.
      */
     public void configureLogger() {
-        final LogConfigurator logConfigurator = new LogConfigurator();
-
-        logConfigurator.setFileName(Environment.getExternalStorageDirectory()
-                + File.separator + getResources().getString(R.string.app_name)
-                .toLowerCase().replace(" ", "_") + ".log");
-        logConfigurator.setRootLevel(Level.ERROR);
-        // Set log level of a specific logger
-        logConfigurator.setLevel("org.apache.log4j.Logger", Level.ERROR);
-        logConfigurator.configure();
+//        final LogConfigurator logConfigurator = new LogConfigurator();
+//
+//        logConfigurator.setRootLevel(Level.ERROR);
+//        // Set log level of a specific logger
+//        logConfigurator.setLevel("org.apache.log4j.Logger", Level.ERROR);
+//        logConfigurator.configure();
         logger.info("Logger is configured.");
     }
 }
