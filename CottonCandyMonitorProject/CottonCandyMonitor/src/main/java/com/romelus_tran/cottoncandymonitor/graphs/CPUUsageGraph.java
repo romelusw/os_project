@@ -89,7 +89,8 @@ public class CPUUsageGraph {
         mRenderer.setZoomEnabled(false, false); // disable zooming
         mRenderer.setShowLegend(true); // show the legend
         mRenderer.setFitLegend(true); // make sure it fits
-        mRenderer.setLegendTextSize(20);
+        mRenderer.setLegendTextSize(15);
+        mRenderer.setLegendHeight(20);
         mRenderer.setTextTypeface(FontUtils.loadFontFromAssets(FontUtils.FONT_CAVIAR_DREAMS_BOLD));
 
         _view = ChartFactory.getLineChartView(context, dataset, mRenderer);

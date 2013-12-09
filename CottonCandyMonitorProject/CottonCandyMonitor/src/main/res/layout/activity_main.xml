@@ -19,7 +19,7 @@
         android:id="@+id/chart"
         android:orientation="horizontal"
         android:layout_width="fill_parent"
-        android:layout_height="100dp"/>
+        android:layout_height="175dp"/>
 
     <!-- Total Processes -->
     <TextView

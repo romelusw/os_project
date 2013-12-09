@@ -60,7 +60,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        configureLogger();
+        // configureLogger(); Disable for deployment
 
         CPUCollector cpuCollector = new CPUCollector();
 
