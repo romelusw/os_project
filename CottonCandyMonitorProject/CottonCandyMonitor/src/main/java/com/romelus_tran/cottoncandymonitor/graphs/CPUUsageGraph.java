@@ -82,14 +82,14 @@ public class CPUUsageGraph {
         mRenderer.setBackgroundColor(context.getResources().getColor(R.color.graphBackgroundColor));
         mRenderer.setMarginsColor(context.getResources().getColor(R.color.graphBackgroundColor));
         mRenderer.setXLabels(0);
-        mRenderer.setYLabels(0);
+        mRenderer.setYLabels(3);
         mRenderer.setYAxisMin(0);
         mRenderer.setYAxisMax(100);
         mRenderer.setPanEnabled(false); // disable panning the chart
         mRenderer.setZoomEnabled(false, false); // disable zooming
         mRenderer.setShowLegend(true); // show the legend
         mRenderer.setFitLegend(true); // make sure it fits
-        mRenderer.setLegendTextSize(18);
+        mRenderer.setLegendTextSize(20);
         mRenderer.setTextTypeface(FontUtils.loadFontFromAssets(FontUtils.FONT_CAVIAR_DREAMS_BOLD));
 
         _view = ChartFactory.getLineChartView(context, dataset, mRenderer);

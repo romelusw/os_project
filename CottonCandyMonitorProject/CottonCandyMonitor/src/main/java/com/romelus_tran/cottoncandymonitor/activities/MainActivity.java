@@ -72,8 +72,6 @@ public class MainActivity extends ActionBarActivity {
 
         setContentView(R.layout.activity_main);
 
-        FontUtils.getContext(getApplicationContext());
-
         // create cpu usage graph and setup listener with polling
         _cpuUsageGraph = new CPUUsageGraph();
         List<IResultListener> listeners = new ArrayList<>();

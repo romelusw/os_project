@@ -6,8 +6,11 @@
     </style>
 
     <!-- Color Scheme reference: http://www.colorcombos.com/color-schemes/211/ColorCombo211.html -->
+    <color name="splashBackground">#FFAEAE</color>
+    <color name="splashText">#FFFFFF</color>
+
     <!-- Graph & Line Colors -->
-    <color name="graphBackgroundColor">#FFF0AA</color>
+    <color name="graphBackgroundColor">#FFFFFF</color>
     <color name="userColor">#FFAEAE</color>
     <color name="systemColor">#56BAEC</color>
     <color name="iowColor">#B0E57C</color>

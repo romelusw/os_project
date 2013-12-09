@@ -17,22 +17,34 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+
+        <!-- Splash Screen -->
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".activities.SplashActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Black.NoTitleBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
+
+        <!-- Main Activity -->
+        <activity
+            android:name=".activities.MainActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <!-- Process Activity -->
         <activity android:name=".activities.ProcessActivity"
             android:label="Process Information"
             android:parentActivityName=".activities.MainActivity">
         </activity>
 
+        <!-- Graphical Activity (for achartengine) -->
         <activity android:name="org.achartengine.GraphicalActivity" />
     </application>
 
