@@ -26,3 +26,5 @@ The Application will have a tab system, which the user can use to control the cu
 > 1. We check if the process exists
 >   If not we alert the user with a popup indicating that the process has been since terminated
 > 2. Display the specific metrics relevant to the process selected
+
+https://play.google.com/store/apps/details?id=com.romelus_tran.cottoncandymonitor&hl=en
